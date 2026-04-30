@@ -1,0 +1,11 @@
+{
+  "name": "assignment-iot",
+  "version": "1.0.0",
+  "description": "Hardware and sensors are increasingly integrated into everyday products. As a web developer, understanding how to communicate with connected devices using lightweight protocols is a valuable skill.",
+  "main": "src/main.py",
+  "scripts": {
+    "start": "node src/main.py"
+  },
+  "author": "Angelina Larsson",
+  "license": "MIT"
+}
