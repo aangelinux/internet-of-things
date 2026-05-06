@@ -1,4 +1,4 @@
-# Filename: db.py
+# Filename: connect.py
 # Description: Establishes a connection with an InfluxDB database.
 
 import os
