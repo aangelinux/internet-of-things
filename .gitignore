@@ -1,6 +1,11 @@
 # Dependencies
 node_modules/
+
+# Virtual environment
 .venv/
+
+# Compiled
+__pycache__/
 
 # Env variables
 .env
