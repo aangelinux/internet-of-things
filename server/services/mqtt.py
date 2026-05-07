@@ -12,10 +12,10 @@ def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.payload))
 
 
-def create_client():
+def create_mqtt_client():
     return mqtt.Client()
 
-def connect_mqtt(client):
+def connect(client):
     """Connects to an MQTT broker."""
     client.on_connect = on_connect
     client.on_message = on_message

@@ -13,7 +13,9 @@ ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
 
 options = write_client_options(write_options = SYNCHRONOUS)
 
-def create_client():
+def create_db_client():
+    print("Connected to DB")
+
     return InfluxDBClient3(
         host = HOST,
         database = DATABASE,
