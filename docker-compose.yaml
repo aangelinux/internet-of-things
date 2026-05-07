@@ -19,9 +19,9 @@ services:
 
   influxdb3-explorer:
     container_name: influxdb3-explorer
-    image: influxdata/influxdb3-ui:latest
+    image: influxdata/influxdb3-ui:1.8.0
     ports:
-      - 8888:8888
+      - 8080:8080
     volumes:
       - ./.influxdb3-ui/db:/db:rw
       - ./.influxdb3-ui/config:/app-root/config:ro
