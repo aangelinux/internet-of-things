@@ -1,7 +1,9 @@
 # Filename: router.py
 # Description: Sets up routes for the API.
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from db.repository import query_data
+from .dependencies import get_db
 
 router = APIRouter()
 
@@ -9,6 +11,6 @@ router = APIRouter()
 async def read_root():
     return { "message": "Hello, World!" }
 
-@router.post("/data/", tags = ["data"])
-async def post_data():
-    return { "message": "Inserting data ..." }
+@router.get("/data/", tags = ["data"])
+async def read_data(db = Depends(get_db)):
+    return query_data(db)

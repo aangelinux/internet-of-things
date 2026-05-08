@@ -2,6 +2,7 @@
 # Description: Establishes a connection with an MQTT Broker.
 
 import paho.mqtt.client as mqtt
+from db.repository import write_data
 
 # Callback functions
 def on_connect(client, userdata, flags, rc):
@@ -9,7 +10,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("lnu/iot/al227bn/sensor")
 
 def on_message(client, userdata, msg):
-    print(msg.topic + " " + str(msg.payload))
+    db = userdata["db_client"]
+    write_data(db, msg.payload)
 
 
 def create_mqtt_client():

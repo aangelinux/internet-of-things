@@ -8,19 +8,27 @@ from api.router import router
 from services.mqtt import create_mqtt_client, connect
 from db.connect import create_db_client
 
+origins = ["*"]
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db_client = create_db_client()
     mqtt_client = create_mqtt_client()
-    connect(mqtt_client)
+    mqtt_client.user_data_set({
+        "db_client": db_client
+    })
+    
+    app.state.db_client = db_client
+    app.state.mqtt_client = mqtt_client
+    connect(app.state.mqtt_client)
+
     yield
 
-    mqtt_client.loop_stop()
-    mqtt_client.disconnect()
-    db_client.close()
+    app.state.mqtt_client.loop_stop()
+    app.state.mqtt_client.disconnect()
+    app.state.db_client.close()
     print("Server disconnected")
 
-origins = ["*"]
 
 app = FastAPI(lifespan = lifespan)
 
