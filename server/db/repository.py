@@ -10,8 +10,8 @@ def write_data(db, data):
     data_json = json.loads(data)
 
     point = Point("climate") \
-        .field("temperature", data_json["temperature"]) \
-        .field("humidity", data_json["humidity"]) \
+        .field("temperature", float(data_json["temperature"])) \
+        .field("humidity", float(data_json["humidity"])) \
         .time(datetime.now(timezone.utc))
 
     db.write(point)
