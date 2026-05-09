@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
     print("Server disconnected")
 
 
-app = FastAPI(lifespan = lifespan)
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(router)
 app.add_middleware(

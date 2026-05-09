@@ -7,10 +7,10 @@ from .dependencies import get_db
 
 router = APIRouter()
 
-@router.get("/", tags = ["root"])
+@router.get("/", tags=["root"])
 async def read_root():
     return { "message": "Hello, World!" }
 
-@router.get("/data/", tags = ["data"])
-async def read_data(db = Depends(get_db)):
+@router.get("/data/", tags=["data"])
+async def read_data(db=Depends(get_db)):
     return query_data(db)

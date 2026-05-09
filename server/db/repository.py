@@ -10,8 +10,8 @@ def write_data(db, data):
     data_json = json.loads(data)
 
     point = Point("climate") \
-        .field("temperature", str(data_json["temperature"])) \
-        .field("humidity", str(data_json["humidity"])) \
+        .field("temperature", data_json["temperature"]) \
+        .field("humidity", data_json["humidity"]) \
         .time(datetime.now(timezone.utc))
 
     db.write(point)
@@ -19,7 +19,7 @@ def write_data(db, data):
 def query_data(db):
     """Queries data from a database for a specified timespan."""
     query = db.query(
-        "SELECT humidity, temperature, time FROM climate")
+        "SELECT * FROM climate")
 
     # Invoke data-parsing functions here later
 

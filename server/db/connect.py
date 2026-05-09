@@ -11,7 +11,7 @@ HOST = os.getenv("HOST")
 DATABASE = os.getenv("DATABASE")
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
 
-options = write_client_options(write_options = SYNCHRONOUS)
+options = write_client_options(write_options=SYNCHRONOUS)
 
 def create_db_client():
     print("Connected to DB")
