@@ -13,4 +13,4 @@ async def read_root():
 
 @router.get("/data/", tags=["data"])
 async def read_data(db=Depends(get_db)):
-    return query_data(db)
+    return { "message": query_data(db) }

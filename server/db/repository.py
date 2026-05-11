@@ -19,8 +19,7 @@ def write_data(db, data):
 def query_data(db):
     """Queries data from a database for a specified timespan."""
     query = db.query(
-        "SELECT * FROM climate")
+        "SELECT * FROM climate WHERE time >= now() - INTERVAL '30 days'"
+    )
 
-    # Invoke data-parsing functions here later
-
-    print(query)
+    return query.to_pylist()
