@@ -2,9 +2,11 @@
  * Renders a dashboard displaying charts of sensor data.
  */
 
+import DataChart from "./Chart"
+
 function Dashboard() {
   return (
-    <h1>Hello</h1>
+    <DataChart />
   )
 }
 
