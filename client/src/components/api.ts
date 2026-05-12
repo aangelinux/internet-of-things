@@ -5,11 +5,11 @@
 export async function fetchData() {
   const url = "/api/data"
   const res = await fetch(url)
+
+  if (!res.ok) {
+    throw new Error(`Error fetching data from server: ${res.statusText}`)
+  }
   const result = await res.json()
 
-  if (!result.ok) {
-    throw new Error(`Error fetching data from server: ${result.statusCode}`)
-  }
-
-  return result
+  return result.message
 }
