@@ -1,0 +1,11 @@
+@font-face {
+  font-family: GoogleSans;
+  src: url(/assets/GoogleSans-VariableFont_GRAD\,opsz\,wght.ttf);
+}
+
+body {
+}
+
+.page {
+  font-family: GoogleSans;
+}

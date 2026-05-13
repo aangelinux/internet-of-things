@@ -2,7 +2,7 @@
  * Fetches temperature & humidity data from the server.
  */
 
-export async function fetchData() {
+export async function fetchData(): Promise<[]> {
   const url = "/api/data"
   const res = await fetch(url)
 

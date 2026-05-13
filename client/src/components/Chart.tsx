@@ -66,9 +66,18 @@ function DataChart() {
     maintainAspectRatio: false,
   }
 
+  const headerStyle = {
+    justifySelf: 'center',
+    fontFamily: 'GoogleSans',
+  }
+
+  const graphStyle = {
+  }
+
   return (
     <div>
-      <Line data={chartData} options={options} />
+      <h1 style={headerStyle}>Temperature & Humidity</h1>
+      <Line data={chartData} options={options} style={graphStyle}/>
     </div>
   )
 }
