@@ -4,7 +4,7 @@
 
 import mqtt from "mqtt"
 
-export function connectMQTT() {
+export function connectMQTT(setNewData: React.Dispatch<React.SetStateAction<string>>) {
   const clientID = "mqtt_" + Math.random().toString(16).substring(2, 10)
   const host = "wss://broker.emqx.io:8084/mqtt"
   const options: mqtt.IClientOptions = {
@@ -34,5 +34,6 @@ export function connectMQTT() {
   })
   client.on("message", (topic, message, packet) => {
     console.log(`Received message: ${message.toString()}, on topic: ${topic}`)
+    setNewData(message.toString())
   })
 }

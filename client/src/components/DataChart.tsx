@@ -27,7 +27,7 @@ ChartJS.register(
   Legend
 )
 
-function DataChart() {
+function DataChart({ newData }: { newData: string }) {
   const [data, setData] = useState<Array<any>>([])
   const [chartData, setChartData] = useState<any>({
     labels: [],
@@ -66,6 +66,10 @@ function DataChart() {
       ]
     })
   }, [data])
+
+  useEffect(() => {
+    // Update data array here
+  }, [newData])
 
   const options = {
     responsive: true,

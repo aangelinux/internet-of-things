@@ -2,18 +2,20 @@
  * Renders a dashboard displaying charts of sensor data.
  */
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { connectMQTT } from "./mqtt"
 import styles from "../styles/Dashboard.module.css"
-import DataChart from "./Chart"
+import DataChart from "./DataChart"
 
 function Dashboard() {
+  const [newData, setNewData] = useState<string>("")
+
   useEffect(() => {
-    connectMQTT()
+    connectMQTT(setNewData)
   }, [])
 
   return (
-    <div className={styles.page}><DataChart /></div>
+    <div className={styles.page}><DataChart newData={newData} /></div>
   )
 }
 
