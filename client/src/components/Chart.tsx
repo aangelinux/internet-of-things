@@ -14,6 +14,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  scales,
 } from "chart.js"
 
 ChartJS.register(
@@ -38,7 +39,12 @@ function DataChart() {
 
   useEffect(() => {
     async function fetchAPIData() {
-      setData(await fetchData())
+      try {
+        const response = await fetchData()
+        setData(response)
+      } catch (error) {
+        console.error("Error fetching sensor data: ", error)
+      }
     }
     fetchAPIData()
   }, [])
@@ -64,6 +70,11 @@ function DataChart() {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    scales: {
+      y: {
+        grace: 10
+      }
+    }
   }
 
   const headerStyle = {
@@ -75,7 +86,7 @@ function DataChart() {
   }
 
   return (
-    <div>
+    <div style={{ height: '50vh' }}>
       <h1 style={headerStyle}>Temperature & Humidity</h1>
       <Line data={chartData} options={options} style={graphStyle}/>
     </div>
