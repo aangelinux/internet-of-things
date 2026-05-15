@@ -13,7 +13,8 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  plugins
 } from "chart.js"
 
 ChartJS.register(
@@ -51,16 +52,19 @@ function DataChart({ newData }: { newData: Buffer<ArrayBufferLike> }) {
   useEffect(() => {
     if (!data.length) return
 
+    const MAX_POINTS = 20
+    const slicedData = data.slice(-MAX_POINTS)
+
     setChartData({
-      labels: data.map((e) => e.time),
+      labels: slicedData.map((e) => e.time),
       datasets: [
         {
           label: 'Temperature',
-          data: data.map((e) => e.temperature)
+          data: slicedData.map((e) => e.temperature)
         },
         {
           label: 'Humidity',
-          data: data.map((e) => e.humidity)
+          data: slicedData.map((e) => e.humidity)
         }
       ]
     })
@@ -78,7 +82,7 @@ function DataChart({ newData }: { newData: Buffer<ArrayBufferLike> }) {
     },
     scales: {
       y: {
-        grace: 10
+        grace: 10,
       },
       x: {
         ticks: {
