@@ -12,14 +12,12 @@ def write_data(db, data):
     point = Point("climate") \
         .field("temperature", float(data_json["temperature"])) \
         .field("humidity", float(data_json["humidity"])) \
-        .time(datetime.now(timezone.utc))
+        .time(str(data_json["time"]))
 
     db.write(point)
 
 def query_data(db):
-    """Queries data from a database for a specified timespan."""
-    query = db.query(
-        "SELECT * FROM climate WHERE time >= now() - INTERVAL '30 days'"
-    )
+    """Queries data from an InfluxDB database."""
+    query = db.query("SELECT * FROM climate")
 
     return query.to_pylist()
