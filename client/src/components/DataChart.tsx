@@ -13,8 +13,7 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend,
-  scales,
+  Legend
 } from "chart.js"
 
 ChartJS.register(
@@ -24,10 +23,10 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 )
 
-function DataChart({ newData }: { newData: string }) {
+function DataChart({ newData }: { newData: Buffer<ArrayBufferLike> }) {
   const [data, setData] = useState<Array<any>>([])
   const [chartData, setChartData] = useState<any>({
     labels: [],
@@ -68,15 +67,33 @@ function DataChart({ newData }: { newData: string }) {
   }, [data])
 
   useEffect(() => {
-    // Update data array here
+    setData(prevData => [...prevData, newData])
   }, [newData])
 
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+      padding: 40
+    },
     scales: {
       y: {
         grace: 10
+      },
+      x: {
+        ticks: {
+          autoSkip: true,
+          maxTicksLimit: 10,
+          callback: function(_: string, index: number, ticks: []) {
+            return new Date(data[index].time).toLocaleDateString("en-US", { 
+              year: "2-digit", 
+              month: "numeric", 
+              day: "numeric", 
+              hour: "numeric", 
+              minute: "numeric" 
+            })
+          }
+        }
       }
     }
   }
@@ -90,7 +107,7 @@ function DataChart({ newData }: { newData: string }) {
   }
 
   return (
-    <div style={{ height: '50vh' }}>
+    <div style={{ height: '75vh' }}>
       <h1 style={headerStyle}>Temperature & Humidity</h1>
       <Line data={chartData} options={options} style={graphStyle}/>
     </div>
