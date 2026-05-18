@@ -12,6 +12,6 @@ export async function fetchData(): Promise<ClimateData[]> {
     throw new Error(`Error fetching data from server: ${res.statusText}`)
   }
   const result = await res.json()
-
+  
   return result.message
 }
