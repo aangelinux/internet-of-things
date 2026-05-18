@@ -1,5 +1,5 @@
 /**
- * Renders a chart displaying data over time.
+ * Renders a chart displaying temperature & humidity over time.
  */
 
 import { useState, useEffect } from "react"
@@ -14,7 +14,7 @@ import {
   Title,
   Tooltip,
   Legend,
-  plugins
+  Tick,
 } from "chart.js"
 
 ChartJS.register(
@@ -28,6 +28,7 @@ ChartJS.register(
 )
 
 function DataChart({ newData }: { newData: Buffer<ArrayBufferLike> }) {
+  const [maxPoints, setMaxPoints] = useState<number>(20)
   const [data, setData] = useState<Array<any>>([])
   const [chartData, setChartData] = useState<any>({
     labels: [],
@@ -52,19 +53,21 @@ function DataChart({ newData }: { newData: Buffer<ArrayBufferLike> }) {
   useEffect(() => {
     if (!data.length) return
 
-    const MAX_POINTS = 20
-    const slicedData = data.slice(-MAX_POINTS)
+    // Limit number of datapoints to prevent crowding
+    const datapoints = data.slice(0, maxPoints)
 
     setChartData({
-      labels: slicedData.map((e) => e.time),
+      labels: datapoints.map((e) => e.time),
       datasets: [
         {
-          label: 'Temperature',
-          data: slicedData.map((e) => e.temperature)
+          label: "Temperature",
+          data: datapoints.map((e) => e.temperature),
+          borderColor: "teal"
         },
         {
-          label: 'Humidity',
-          data: slicedData.map((e) => e.humidity)
+          label: "Humidity",
+          data: datapoints.map((e) => e.humidity),
+          borderColor: "purple"
         }
       ]
     })
@@ -78,7 +81,7 @@ function DataChart({ newData }: { newData: Buffer<ArrayBufferLike> }) {
     responsive: true,
     maintainAspectRatio: false,
     layout: {
-      padding: 40
+      padding: 25
     },
     scales: {
       y: {
@@ -88,16 +91,17 @@ function DataChart({ newData }: { newData: Buffer<ArrayBufferLike> }) {
         ticks: {
           autoSkip: true,
           maxTicksLimit: 10,
-          callback: function(_: string, index: number, ticks: []) {
+          callback: function(tickValue: string | number, index: number, ticks: Tick[]) {
             return new Date(data[index].time).toLocaleDateString("en-US", { 
               year: "2-digit", 
               month: "numeric", 
               day: "numeric", 
               hour: "numeric", 
-              minute: "numeric" 
+              minute: "numeric",
+              second: "numeric"
             })
           }
-        }
+        },
       }
     }
   }
