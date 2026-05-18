@@ -7,7 +7,7 @@
   "scripts": {
     "client": "start http://localhost:3002 && vite",
     "server": "..\\.venv\\Scripts\\python.exe -X utf8 -m fastapi dev ../server/app/main.py",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "dev": "concurrently \"npm run server\" \"sleep 5 && npm run client\"",
     "build": "vite build"
   },
   "author": "Angelina Larsson",
