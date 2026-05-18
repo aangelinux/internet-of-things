@@ -1,5 +1,5 @@
 /**
- * Renders a dashboard displaying charts of sensor data.
+ * Renders a dashboard displaying a sensor-data chart and a LED button.
  */
 
 import { useEffect, useState } from "react"
@@ -16,18 +16,21 @@ interface ClimateData {
 
 function Dashboard() {
   const [newData, setNewData] = useState<ClimateData>({ time: "", temperature: 0, humidity: 0 })
-  const [broker, setBroker] = useState<Broker | null>(null)
+  const [ledState, setLedState] = useState<string>("")
+
+  const broker = Broker.Instance
 
   useEffect(() => {
-    setBroker(Broker.Instance)
-
-    Broker.Instance.SetNewData = setNewData
+    broker.subscribe((data) => {
+      setNewData(data)
+    })
   }, [])
 
   return (
     <div className={styles.page}>
       <div className={styles.chart}><DataChart newData={newData} /></div>
-      <div className={styles.button}><LEDButton broker={broker ?? Broker.Instance}/></div>
+      <div className={styles.button}>
+        <LEDButton broker={broker} ledState={ledState} /></div>
     </div>
   )
 }

@@ -5,7 +5,7 @@
 import { Button } from "@mui/material"
 import Broker from "./broker"
 
-function LEDButton({ broker }: { broker: Broker }) {
+function LEDButton({ broker, ledState }: { broker: Broker, ledState: string }) {
   const handleClick = (state: string) => {
     if (state === "ON" || "OFF") {
       const command = JSON.stringify({
