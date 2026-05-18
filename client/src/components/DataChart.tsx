@@ -65,7 +65,7 @@ function DataChart({ newData }: { newData: ClimateData }) {
   const chartData: ChartData = useMemo(() => {
     try {
       // Limit number of datapoints to prevent crowding
-      const datapoints = data.slice(0, maxPoints)
+      const datapoints = data.slice(-maxPoints)
 
       return { 
         labels: datapoints.map((e) => e.time),

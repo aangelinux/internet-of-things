@@ -3,9 +3,24 @@
   src: url(/assets/GoogleSans-VariableFont_GRAD\,opsz\,wght.ttf);
 }
 
-body {
-}
-
 .page {
   font-family: GoogleSans;
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto;
+  grid-template-areas:
+    "chart"
+    "button";
+  gap: 80px;
+  padding-bottom: 50px;
+}
+
+.chart {
+  grid-area: chart;
+}
+
+.button {
+  grid-area: button;
+  align-self: center;
+  justify-self: center;
 }

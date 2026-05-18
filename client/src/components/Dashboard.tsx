@@ -2,11 +2,11 @@
  * Renders a dashboard displaying charts of sensor data.
  */
 
-import { Buffer } from "buffer"
 import { useEffect, useState } from "react"
-import { connectMQTT } from "./mqtt"
 import styles from "../styles/Dashboard.module.css"
+import Broker from "./broker"
 import DataChart from "./DataChart"
+import LEDButton from "./LEDButton"
 
 interface ClimateData {
   time: string
@@ -16,13 +16,19 @@ interface ClimateData {
 
 function Dashboard() {
   const [newData, setNewData] = useState<ClimateData>({ time: "", temperature: 0, humidity: 0 })
+  const [broker, setBroker] = useState<Broker | null>(null)
 
   useEffect(() => {
-    connectMQTT(setNewData)
+    setBroker(Broker.Instance)
+
+    Broker.Instance.SetNewData = setNewData
   }, [])
 
   return (
-    <div className={styles.page}><DataChart newData={newData} /></div>
+    <div className={styles.page}>
+      <div className={styles.chart}><DataChart newData={newData} /></div>
+      <div className={styles.button}><LEDButton broker={broker ?? Broker.Instance}/></div>
+    </div>
   )
 }
 
