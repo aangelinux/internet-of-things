@@ -4,7 +4,13 @@
 
 import mqtt from "mqtt"
 
-export function connectMQTT(setNewData: React.Dispatch<React.SetStateAction<Buffer<ArrayBufferLike>>>) {
+interface ClimateData {
+  time: string
+  temperature: number
+  humidity: number
+}
+
+export function connectMQTT(setNewData: React.Dispatch<React.SetStateAction<ClimateData>>) {
   const clientID = "mqtt_" + Math.random().toString(16).substring(2, 10)
   const host = "wss://broker.emqx.io:8084/mqtt"
   const options: mqtt.IClientOptions = {

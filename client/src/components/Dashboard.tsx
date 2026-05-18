@@ -8,8 +8,14 @@ import { connectMQTT } from "./mqtt"
 import styles from "../styles/Dashboard.module.css"
 import DataChart from "./DataChart"
 
+interface ClimateData {
+  time: string
+  temperature: number
+  humidity: number
+}
+
 function Dashboard() {
-  const [newData, setNewData] = useState<Buffer<ArrayBufferLike>>(Buffer.from([]))
+  const [newData, setNewData] = useState<ClimateData>({ time: "", temperature: 0, humidity: 0 })
 
   useEffect(() => {
     connectMQTT(setNewData)
