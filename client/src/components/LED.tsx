@@ -3,9 +3,9 @@
  */
 
 import { Button } from "@mui/material"
-import Broker from "./broker"
+import Broker from "../services/broker"
 
-function LEDButton({ broker, ledState }: { broker: Broker, ledState: string }) {
+function LED({ broker, ledState }: { broker: Broker, ledState: string }) {
   const handleClick = (state: string) => {
     if (state === "ON" || "OFF") {
       const command = JSON.stringify({
@@ -18,18 +18,18 @@ function LEDButton({ broker, ledState }: { broker: Broker, ledState: string }) {
   return (
     <div>
       <h1 style={{ justifySelf: "center" }}>Update LED</h1>
-      <Button 
-        variant="contained" 
-        size="large" 
-        sx={{ margin: 1 }} 
+      <Button
+        variant="contained"
+        size="large"
+        sx={{ margin: 1 }}
         onClick={() => handleClick("ON")}
       >
         Turn ON
       </Button>
-      <Button 
-        variant="contained" 
-        size="large" 
-        sx={{ margin: 1 }} 
+      <Button
+        variant="contained"
+        size="large"
+        sx={{ margin: 1 }}
         onClick={() => handleClick("OFF")}
       >
         Turn OFF
@@ -38,4 +38,4 @@ function LEDButton({ broker, ledState }: { broker: Broker, ledState: string }) {
   )
 }
 
-export default LEDButton
+export default LED

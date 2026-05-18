@@ -10,7 +10,7 @@
   grid-template-rows: auto;
   grid-template-areas:
     "chart"
-    "button";
+    "led";
   gap: 80px;
   padding-bottom: 50px;
 }
@@ -19,8 +19,8 @@
   grid-area: chart;
 }
 
-.button {
-  grid-area: button;
+.led {
+  grid-area: led;
   align-self: center;
   justify-self: center;
 }

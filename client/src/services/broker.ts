@@ -2,13 +2,8 @@
  * Singleton connection to an MQTT Broker.
  */
 
+import { ClimateData } from "../utils/types"
 import mqtt from "mqtt"
-
-interface ClimateData {
-  time: string
-  temperature: number
-  humidity: number
-}
 
 class Broker {
   private clientID: string

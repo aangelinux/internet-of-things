@@ -2,8 +2,9 @@
  * Renders a chart displaying temperature & humidity over time.
  */
 
+import { ClimateData, ChartData } from "../utils/types"
 import { useState, useEffect, useMemo } from "react"
-import { fetchData } from "./api"
+import { fetchData } from "../services/api"
 import { Line } from "react-chartjs-2"
 import {
   Chart as ChartJS,
@@ -26,17 +27,6 @@ ChartJS.register(
   Tooltip,
   Legend,
 )
-
-interface ClimateData {
-  time: string
-  temperature: number
-  humidity: number
-}
-
-interface ChartData {
-  labels: string[]
-  datasets: Array<{ label: string, data: number[], borderColor: string }>
-}
 
 const emptyChartData = {
   labels: [],
