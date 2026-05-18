@@ -5,10 +5,13 @@
 import { ClimateData } from "../utils/types"
 import mqtt from "mqtt"
 
+type LEDState = "ON" | "OFF"
+
 class Broker {
   private clientID: string
   private client: mqtt.MqttClient | null
-  private listeners: ((data: ClimateData) => void)[] = []
+  private sensorListeners: ((data: ClimateData) => void)[] = []
+  private ledListeners: ((state: LEDState) => void)[] = []
 
   private static _instance: Broker
 
@@ -34,25 +37,46 @@ class Broker {
     this.client?.on("connect", () => {
       console.log(`Client connected: ${this.clientID}`)
       this.client?.subscribe("lnu/iot/al227bn/sensor", { qos: 0 })
+      this.client?.subscribe("lnu/iot/al227bn/led/state", { qos: 0 })
     })
 
     this.client?.on("message", (topic, message, packet) => {
       console.log(`Received message: ${message.toString()}, on topic: ${topic}`)
-      try {
-        const parsedData = JSON.parse(message.toString())
-        this.notify(parsedData)
-      } catch (error) {
-        console.error("Could not parse message: ", error)
+
+      if (topic === "lnu/iot/al227bn/sensor") {
+        try {
+          const parsedData = JSON.parse(message.toString())
+          this.notifySensor(parsedData)
+        } catch (error) {
+          console.error("Could not parse sensor data: ", error)
+        }
+      }
+
+      if (topic === "lnu/iot/al227bn/led/state") {
+        try {
+          const parsedState = JSON.parse(message.toString()).ledState
+          this.notifyLED(parsedState)
+        } catch (error) {
+          console.error("Could not parse LED state: ", error)
+        }
       }
     })
   }
 
-  private notify(data: ClimateData) {
-    this.listeners.forEach((listener) => listener(data))
+  private notifySensor(data: ClimateData) {
+    this.sensorListeners.forEach((listener) => listener(data))
   }
 
-  subscribe(listener: (data: ClimateData) => void) {
-    this.listeners.push(listener)
+  private notifyLED(state: LEDState) {
+    this.ledListeners.forEach((listener) => listener(state))
+  }
+
+  subscribeSensorData(listener: (data: ClimateData) => void) {
+    this.sensorListeners.push(listener)
+  }
+
+  subscribeLED(listener: (state: LEDState) => void) {
+    this.ledListeners.push(listener)
   }
 
   connect() {

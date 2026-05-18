@@ -15,25 +15,44 @@ function LED({ broker, ledState }: { broker: Broker, ledState: string }) {
     }
   }
 
+  const color = () => {
+    return ledState === "ON" ? "green" : "red"
+  }
+
+  const headerStyle: Object = {
+    display: "flex", 
+    justifySelf: "center", 
+    fontFamily: "GoogleSans", 
+    flexDirection: "row",
+    gap: 10,
+  }
+
   return (
     <div>
-      <h1 style={{ justifySelf: "center" }}>Update LED</h1>
-      <Button
-        variant="contained"
-        size="large"
-        sx={{ margin: 1 }}
-        onClick={() => handleClick("ON")}
-      >
-        Turn ON
-      </Button>
-      <Button
-        variant="contained"
-        size="large"
-        sx={{ margin: 1 }}
-        onClick={() => handleClick("OFF")}
-      >
-        Turn OFF
-      </Button>
+      <div style={headerStyle}>
+        <h1>LED State:</h1>
+        <h1 style={{ color: color() }}>{ledState}</h1>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <Button
+          variant="contained"
+          size="large"
+          sx={{ margin: 1 }}
+          onClick={() => handleClick("ON")}
+        >
+          Turn ON
+        </Button>
+        <Button
+          variant="contained"
+          size="large"
+          sx={{ margin: 1 }}
+          onClick={() => handleClick("OFF")}
+        >
+          Turn OFF
+        </Button>
+      </div>
+
     </div>
   )
 }

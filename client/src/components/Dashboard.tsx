@@ -11,13 +11,17 @@ import LED from "./LED"
 
 function Dashboard() {
   const [newData, setNewData] = useState<ClimateData>({ time: "", temperature: 0, humidity: 0 })
-  const [ledState, setLedState] = useState<string>("")
+  const [ledState, setLedState] = useState<string>("OFF")
 
   const broker = Broker.Instance
 
   useEffect(() => {
-    broker.subscribe((data) => {
+    broker.subscribeSensorData((data) => {
       setNewData(data)
+    })
+
+    broker.subscribeLED((state) => {
+      setLedState(state)
     })
   }, [])
 
