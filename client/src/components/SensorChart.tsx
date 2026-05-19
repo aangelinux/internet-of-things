@@ -4,7 +4,7 @@
 
 import useChart from "../hooks/useChart"
 import { ClimateData } from "../utils/types"
-import { formatTicks } from "../utils/dataParser"
+import { formatTick } from "../utils/dataParser"
 import { Line } from "react-chartjs-2"
 import {
   Chart as ChartJS,
@@ -28,8 +28,8 @@ ChartJS.register(
   Legend,
 )
 
-function SensorChart({ newData }: { newData: ClimateData | null }) {
-  const chartData = useChart(newData)
+function SensorChart({ realtimeData }: { realtimeData: ClimateData | null }) {
+  const chartData = useChart(realtimeData)
 
   const headerStyle = {
     justifySelf: "center",
@@ -53,7 +53,7 @@ function SensorChart({ newData }: { newData: ClimateData | null }) {
           callback: function(
             tickValue: string | number, index: number, ticks: Tick[]
           ) { 
-            return formatTicks(index, chartData)
+            return formatTick(index, chartData)
           },
         },
       },

@@ -1,5 +1,4 @@
 export interface BrokerInterface {
-  connect: () => void
   subscribeToSensor: (listener: () => void) => void
   subscribeToLED: (listener: () => void) => void
   publish: (command: string) => void

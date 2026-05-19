@@ -11,13 +11,13 @@ import LEDControls from "./LEDControls"
 
 function Dashboard() {
   const [ledState, setLedState] = useState<LEDState>({ ledState: "OFF" })
-  const [newData, setNewData] = useState<ClimateData | null>(null)
+  const [realtimeData, setRealtimeData] = useState<ClimateData | null>(null)
 
   const broker = Broker.Instance
 
   useEffect(() => {
     broker.subscribeToSensor((data) => {
-      setNewData(data)
+      setRealtimeData(data)
     })
     broker.subscribeToLED((state) => {
       setLedState(state)
@@ -28,7 +28,9 @@ function Dashboard() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.chart}><SensorChart newData={newData} /></div>
+      <div className={styles.chart}>
+        <SensorChart realtimeData={realtimeData} />
+      </div>
       <div className={styles.led}>
         <LEDControls broker={broker} ledState={ledState} />
       </div>

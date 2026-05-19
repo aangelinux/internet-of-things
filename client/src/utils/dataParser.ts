@@ -14,14 +14,14 @@ export function isValid(entry: ClimateData) {
   )
 }
 
-export function formatTicks(index: number, chartData: ChartData) {
+export function formatTick(index: number, chartData: ChartData) {
   const value = new Date(chartData.labels[index])
   if (isNaN(value.getTime())) {
     console.error("Failed to parse date: ", chartData.labels[index])
     return ""
   }
 
-  return value.toLocaleDateString("en-US", { 
+  return value.toLocaleDateString("se-SV", { 
     year: "2-digit", 
     month: "numeric", 
     day: "numeric", 

@@ -27,6 +27,24 @@ class Broker implements BrokerInterface {
     return this._instance || (this._instance = new this())
   }
 
+  private connect() {
+    const host = "wss://broker.emqx.io:8084/mqtt"
+    const options: mqtt.IClientOptions = {
+      keepalive: 60,
+      clientId: this.clientID,
+      protocolId: "MQTT",
+      protocolVersion: 5,
+      clean: true,
+      reconnectPeriod: 1000,
+      connectTimeout: 3 * 1000,
+    }
+
+    console.log("Connecting to MQTT Client ...")
+
+    this.client = mqtt.connect(host, options)
+    this.callbacks()
+  }
+
   private callbacks() {
     this.client?.on("error", (error) => {
       console.error("Connection error: ", error)
@@ -71,24 +89,6 @@ class Broker implements BrokerInterface {
 
   private notifyLED(state: LEDState) {
     this.ledListeners.forEach((listener) => listener(state))
-  }
-
-  connect() {
-    const host = "wss://broker.emqx.io:8084/mqtt"
-    const options: mqtt.IClientOptions = {
-      keepalive: 60,
-      clientId: this.clientID,
-      protocolId: "MQTT",
-      protocolVersion: 5,
-      clean: true,
-      reconnectPeriod: 1000,
-      connectTimeout: 3 * 1000,
-    }
-
-    console.log("Connecting to MQTT Client ...")
-
-    this.client = mqtt.connect(host, options)
-    this.callbacks()
   }
 
   subscribeToSensor(listener: (data: ClimateData) => void) {

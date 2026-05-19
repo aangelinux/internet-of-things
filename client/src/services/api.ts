@@ -4,7 +4,7 @@
 
 import { ClimateData } from "../utils/types"
 
-export async function fetchData(limit: number): Promise<ClimateData[]> {
+export async function fetchSensorData(limit: number): Promise<ClimateData[]> {
   const url = `/api/data/?limit=${limit}`
   const res = await fetch(url)
 

@@ -1,13 +1,13 @@
 /**
- * Custom hook containing logic for the Chart component.
+ * Custom hook containing logic for the SensorChart component.
  */
 
 import { ClimateData, ChartData } from "../utils/types"
 import { useState, useEffect, useMemo } from "react"
-import { fetchData } from "../services/api"
+import { fetchSensorData } from "../services/api"
 import { isValid } from "../utils/dataParser"
 
-function useChart(newData: ClimateData | null) {
+function useChart(realtimeData: ClimateData | null) {
   const [data, setData] = useState<ClimateData[]>([])
   const maxDatapoints = 20
 
@@ -22,7 +22,7 @@ function useChart(newData: ClimateData | null) {
   useEffect(() => {
     async function fetchAPIData() {
       try {
-        const response = await fetchData(maxDatapoints)
+        const response = await fetchSensorData(maxDatapoints)
         setData(response.filter((entry) => isValid(entry)))
       } catch (error) {
         console.error("Error fetching sensor data: ", error)
@@ -56,13 +56,13 @@ function useChart(newData: ClimateData | null) {
   }, [data])
 
   useEffect(() => {
-    if (!newData || !isValid(newData)) {
-      console.error("Malformed data: ", newData)
+    if (!realtimeData || !isValid(realtimeData)) {
+      console.error("Malformed data: ", realtimeData)
       return
     }
 
-    setData(prevData => [...prevData.slice(-maxDatapoints), newData])
-  }, [newData])
+    setData(prevData => [...prevData.slice(-maxDatapoints), realtimeData])
+  }, [realtimeData])
 
   return chartData
 }
