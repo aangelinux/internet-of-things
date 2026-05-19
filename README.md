@@ -46,20 +46,20 @@ flowchart TD
   
 - **Data model:** 
 
-**Table: climate**  
+  - **Table: climate**  
+    
+    | field       | value   |
+    | ----------- | ------- |
+    | temperature | float64 |
+    | humidity    | float64 |
+    | time        | string  |  
   
-| field       | value   |
-| ----------- | ------- |
-| temperature | float64 |
-| humidity    | float64 |
-| time        | string  |  
+  - **Query:**  
+    GET {url}/api/data/?limit=20  
+    Limit param is optional.  
   
-**Query:**  
-GET {url}/api/data/?limit=20  
-Limit param is optional.  
-  
-**Response:**  
-{ time: string, temperature: float, humidity: float }[]  
+  - **Response:**  
+    { time: string, temperature: float, humidity: float }[]  
   
 - **Time-series considerations:** The table uses a 30-day retention period. In the backend, all data queries are limited to 100 rows or a user-specified value and sorted by most recent entries.  
   
