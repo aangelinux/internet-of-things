@@ -11,36 +11,47 @@
 
 
 ### Project Overview
-Briefly describe:
-- What your project does.
-- Which hardware/sensors you simulated.
-- What the dashboard allows the user to monitor/control.
-
+This project features a full IoT pipeline from hardware, to backend, to frontend. The hardware collects temperature & humidity data from a sensor and publishes it to an MQTT Broker. A backend service is set up to read the sensor data from the broker, store it in a database, and expose it via a REST API to be used by a web dashboard.  
+  
+The Wokwi simulation uses an ESP32 microcontroller with a DHT22 sensor and a simple LED component. The dashboard fetches historical sensor data from the backend and displays it on a line chart. It uses a WebSocket connection to read real-time sensor data & LED state from the MQTT Broker and update the chart dynamically. In addition, it provides a set of controls to modify the LED's current state.  
+  
 
 ### Architecture and Data Flow
-Explain how data moves through your system:
-- Wokwi device -> MQTT broker -> processing layer/database -> dashboard.
-- Dashboard -> MQTT command topic -> device action.
+- **Sensor Data**: Wokwi Device -> MQTT Broker -> Backend/Database -> Dashboard
+- **LED State**: Wokwi Device -> MQTT Broker -> Dashboard
+- **LED Command**: Dashboard -> MQTT Broker -> Wokwi Device
 
 ```mermaid
 flowchart TD
-  A[Wokwi Device] -->|MQTT publish: sensor data| B[MQTT Broker]
-  B -->|sensor data| C[Backend Service]
-  C --> D[(Database)]
-  C -->|REST API| E[Web Dashboard]
-  E <-->|WebSocket, realtid| C
-  E -->|send command| C
-  C -->|MQTT publish: command| B
-  B -->|control message| A
-```
+    A[Wokwi Device] 
+    B[MQTT Broker]
+    C[Backend Service]
+    D[(Database)]
+    E[Web Dashboard]
 
-Your diagram must explicitly label the communication protocols used between components (for example MQTT, WebSocket, HTTP/HTTPS).
+    A --->|MQTT publish: sensor data, led state| B
+    B --->|MQTT subscribe: led command| A
+    B --->|MQTT subscribe: sensor data| C
+    C --> D
+    C --->|HTTPS API: sensor data| E
+    B <--->|WebSocket Connection| E
+    B --->|MQTT subscribe: led state, sensor data| E
+    E --->|MQTT publish: led command| B
+```
 
 
 ### Database Strategy
-- **Database chosen:** InfluxDB
-- **Data model:** measurement/collection/table structure
-- **Time-series considerations:** retention, indexing, query strategy, aggregation, etc.
+- **Database chosen:** InfluxDB  
+  
+- **Data model:**  
+**Climate**  
+| field       | value   |
+| ----------- | ------- |
+| temperature | float64 |
+| humidity    | float64 |
+| time        | string  |  
+  
+- **Time-series considerations:** The table uses a 30-day retention period. In the backend service, all data queries are limited to maximum 100 rows or a value chosen by the user. Queried data is sorted by time and returned as a list.  
 
 
 ### MQTT Topics and Payload Documentation
@@ -81,8 +92,11 @@ Your diagram must explicitly label the communication protocols used between comp
 
 
 ### Reflection
-Answer the following:
-1. Which frontend technologies did you choose, and why?
+**Frontend technologies used:**  
+- React for its simplicity in developing robust and user-friendly UIs
+- Vite for its versatility & bundling capabilities
+- Chart.js for its capabilites in creating dynamic and good-looking charts
+  
 2. How does handling real-time MQTT data over WebSockets differ from a standard REST API workflow?
 3. What was the most challenging integration step (hardware, broker, backend, database, frontend), and how did you solve it?
 
