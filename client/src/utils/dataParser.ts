@@ -2,9 +2,9 @@
  * Defines utility functions for validating and parsing data.
  */
 
-import { ChartData } from "./types"
+import { ChartData, ClimateData } from "./types"
 
-export function isValid(entry: any) {
+export function isValid(entry: ClimateData) {
   return (
     entry &&
     typeof entry.time === "string" &&

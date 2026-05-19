@@ -1,12 +1,22 @@
+export interface BrokerInterface {
+  connect: () => void
+  subscribeToSensor: (listener: () => void) => void
+  subscribeToLED: (listener: () => void) => void
+  publish: (command: string) => void
+  disconnect: () => void
+}
+
+export interface ChartData {
+  labels: string[]
+  datasets: { label: string, data: number[], borderColor: string }[]
+}
+
 export interface ClimateData {
   time: string
   temperature: number
   humidity: number
 }
 
-export interface ChartData {
-  labels: string[]
-  datasets: Array<{ label: string, data: number[], borderColor: string }>
+export interface LEDState {
+  ledState: "ON" | "OFF"
 }
-
-export type LEDState = "ON" | "OFF"

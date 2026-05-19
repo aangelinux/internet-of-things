@@ -7,7 +7,7 @@ import { useState, useEffect, useMemo } from "react"
 import { fetchData } from "../services/api"
 import { isValid } from "../utils/dataParser"
 
-function useChart(newData: ClimateData) {
+function useChart(newData: ClimateData | null) {
   const [data, setData] = useState<ClimateData[]>([])
   const maxDatapoints = 20
 
@@ -56,12 +56,12 @@ function useChart(newData: ClimateData) {
   }, [data])
 
   useEffect(() => {
-    if (!isValid(newData)) {
+    if (!newData || !isValid(newData)) {
       console.error("Malformed data: ", newData)
       return
     }
 
-    setData(prevData => [...prevData, newData])
+    setData(prevData => [...prevData.slice(-maxDatapoints), newData])
   }, [newData])
 
   return chartData

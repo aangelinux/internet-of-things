@@ -28,7 +28,7 @@ class ErrorBoundary extends React.Component<Props, State> {
     console.error("Details: ", JSON.stringify(info))
   }
 
-  handleClick() {
+  handleClick = () => {
     window.location.reload()
   }
 

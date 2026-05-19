@@ -2,10 +2,10 @@
  * Singleton connection to an MQTT Broker.
  */
 
-import { ClimateData, LEDState } from "../utils/types"
+import { BrokerInterface, ClimateData, LEDState } from "../utils/types"
 import mqtt from "mqtt"
 
-class Broker {
+class Broker implements BrokerInterface {
   private clientID: string
   private client: mqtt.MqttClient | null = null
   private sensorListeners: ((data: ClimateData) => void)[] = []
@@ -41,25 +41,23 @@ class Broker {
       this.client?.subscribe(this.ledStateTopic, { qos: 0 })
     })
     this.client?.on("message", (topic, message, packet) => {
-      console.log(`Received message: ${message.toString()}, on topic: ${topic}`)
+      console.log(`Message: ${message.toString()}, topic: ${topic}`)
       this.handleMessage(topic, message)
     })
   }
 
   private handleMessage(topic: string, message: Buffer) {
     if (topic === this.sensorTopic) {
-      // Should look like: { temperature: nr, humidity: nr, time: string }
       try {
-        const parsedData = JSON.parse(message.toString())
+        const parsedData: ClimateData = JSON.parse(message.toString())
         this.notifySensor(parsedData)
       } catch (error) {
         console.error("Could not parse sensor data: ", error)
       }
     }
     if (topic === this.ledStateTopic) {
-      // Should look like: { ledState: "ON" } / { ledState: "OFF" }
       try {
-        const parsedState = JSON.parse(message.toString()).ledState
+        const parsedState: LEDState = JSON.parse(message.toString())
         this.notifyLED(parsedState)
       } catch (error) {
         console.error("Could not parse LED state: ", error)
@@ -107,6 +105,9 @@ class Broker {
 
   disconnect() {
     this.client?.end()
+
+    this.ledListeners = []
+    this.sensorListeners = []
   }
 }
 

@@ -2,7 +2,7 @@
  * Renders a dashboard displaying a sensor-data chart and LED controls.
  */
 
-import { ClimateData } from "../utils/types"
+import { ClimateData, LEDState } from "../utils/types"
 import { useEffect, useState } from "react"
 import styles from "../styles/Dashboard.module.css"
 import Broker from "../services/broker"
@@ -10,10 +10,8 @@ import SensorChart from "./SensorChart"
 import LEDControls from "./LEDControls"
 
 function Dashboard() {
-  const [ledState, setLedState] = useState<string>("OFF")
-  const [newData, setNewData] = useState<ClimateData>({ 
-    time: "", temperature: 0, humidity: 0 
-  })
+  const [ledState, setLedState] = useState<LEDState>({ ledState: "OFF" })
+  const [newData, setNewData] = useState<ClimateData | null>(null)
 
   const broker = Broker.Instance
 
@@ -31,7 +29,9 @@ function Dashboard() {
   return (
     <div className={styles.page}>
       <div className={styles.chart}><SensorChart newData={newData} /></div>
-      <div className={styles.led}><LEDControls broker={broker} ledState={ledState} /></div>
+      <div className={styles.led}>
+        <LEDControls broker={broker} ledState={ledState} />
+      </div>
     </div>
   )
 }

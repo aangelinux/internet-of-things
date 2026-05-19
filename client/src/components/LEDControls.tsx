@@ -3,11 +3,13 @@
  */
 
 import { Button } from "@mui/material"
-import Broker from "../services/broker"
+import { BrokerInterface, LEDState } from "../utils/types"
 
-function LEDControls({ broker, ledState }: { broker: Broker, ledState: string }) {
+function LEDControls({ broker, ledState }: 
+  { broker: BrokerInterface, ledState: LEDState }
+) {
   const handleClick = (state: string) => {
-    if (state === "ON" || "OFF") {
+    if (state === "ON" || state === "OFF") {
       const command = JSON.stringify({
         msg: state
       })
@@ -16,7 +18,7 @@ function LEDControls({ broker, ledState }: { broker: Broker, ledState: string })
   }
 
   const color = () => {
-    return ledState === "ON" ? "green" : "red"
+    return ledState.ledState === "ON" ? "green" : "red"
   }
 
   const headerStyle: Object = {
@@ -31,7 +33,7 @@ function LEDControls({ broker, ledState }: { broker: Broker, ledState: string })
     <div>
       <div style={headerStyle}>
         <h1>LED State:</h1>
-        <h1 style={{ color: color() }}>{ledState}</h1>
+        <h1 style={{ color: color() }}>{ledState.ledState}</h1>
       </div>
 
       <div style={{ display: "flex", flexDirection: "row" }}>

@@ -28,7 +28,7 @@ ChartJS.register(
   Legend,
 )
 
-function SensorChart({ newData }: { newData: ClimateData }) {
+function SensorChart({ newData }: { newData: ClimateData | null }) {
   const chartData = useChart(newData)
 
   const headerStyle = {
@@ -50,7 +50,9 @@ function SensorChart({ newData }: { newData: ClimateData }) {
         ticks: {
           autoSkip: true,
           maxTicksLimit: 10,
-          callback: function(tickValue: string | number, index: number, ticks: Tick[]) { 
+          callback: function(
+            tickValue: string | number, index: number, ticks: Tick[]
+          ) { 
             return formatTicks(index, chartData)
           },
         },
