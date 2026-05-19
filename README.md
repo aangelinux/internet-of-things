@@ -23,7 +23,6 @@ Explain how data moves through your system:
 - Dashboard -> MQTT command topic -> device action.
 
 ```mermaid
-info
 flowchart TD
   A[Wokwi Device] -->|MQTT publish: sensor data| B[MQTT Broker]
   B -->|sensor data| C[Backend Service]
@@ -39,7 +38,6 @@ Your diagram must explicitly label the communication protocols used between comp
 
 
 ### Database Strategy
-Document:
 - **Database chosen:** InfluxDB
 - **Data model:** measurement/collection/table structure
 - **Time-series considerations:** retention, indexing, query strategy, aggregation, etc.
@@ -57,6 +55,7 @@ Document:
   "time": "2026-05-19T11:00:00"
 }
 ```
+---
   
 #### LED State (published by Wokwi)
 - **Topic:** `lnu/iot/al227bn/led/state`
@@ -67,6 +66,7 @@ Document:
   "ledState": "ON"
 }
 ```
+---
   
 #### Device Commands (published by dashboard, subscribed by Wokwi)
 - **Topic:** `lnu/iot/al227bn/command/led`
@@ -77,6 +77,7 @@ Document:
   "msg": "ON"
 }
 ```
+---
 
 
 ### Reflection
