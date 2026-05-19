@@ -1,11 +1,11 @@
 /**
- * Renders a button for controlling LED state on a Wokwi simulator.
+ * Renders buttons for controlling LED state on an IoT device.
  */
 
 import { Button } from "@mui/material"
 import Broker from "../services/broker"
 
-function LED({ broker, ledState }: { broker: Broker, ledState: string }) {
+function LEDControls({ broker, ledState }: { broker: Broker, ledState: string }) {
   const handleClick = (state: string) => {
     if (state === "ON" || "OFF") {
       const command = JSON.stringify({
@@ -57,4 +57,4 @@ function LED({ broker, ledState }: { broker: Broker, ledState: string }) {
   )
 }
 
-export default LED
+export default LEDControls

@@ -3,7 +3,6 @@
 
 import json
 from influxdb_client_3 import Point
-from datetime import datetime, timezone
 
 def write_data(db, data):
     """Receives data from an MQTT client and writes it to a database."""

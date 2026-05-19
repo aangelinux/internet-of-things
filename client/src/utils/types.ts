@@ -8,3 +8,5 @@ export interface ChartData {
   labels: string[]
   datasets: Array<{ label: string, data: number[], borderColor: string }>
 }
+
+export type LEDState = "ON" | "OFF"
