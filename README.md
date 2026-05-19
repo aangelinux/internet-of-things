@@ -43,8 +43,10 @@ flowchart TD
 ### Database Strategy
 - **Database chosen:** InfluxDB  
   
-- **Data model:**  
-**Climate**  
+- **Data model:** 
+
+**Table name: Climate**
+
 | field       | value   |
 | ----------- | ------- |
 | temperature | float64 |
@@ -68,6 +70,7 @@ flowchart TD
 ```
 ---
   
+  
 #### LED State (published by Wokwi)
 - **Topic:** `lnu/iot/al227bn/led/state`
 - **Example Payload (JSON):**
@@ -78,6 +81,7 @@ flowchart TD
 }
 ```
 ---
+  
   
 #### Device Commands (published by dashboard, subscribed by Wokwi)
 - **Topic:** `lnu/iot/al227bn/command/led`
