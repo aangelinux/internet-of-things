@@ -42,19 +42,27 @@ flowchart TD
 
 ### Database Strategy
 - **Database chosen:** InfluxDB  
+- **Data access layer:** Path A (Custom API)  
   
 - **Data model:** 
 
-**Table name: Climate**
-
+**Table: climate**  
+  
 | field       | value   |
 | ----------- | ------- |
 | temperature | float64 |
 | humidity    | float64 |
 | time        | string  |  
   
-- **Time-series considerations:** The table uses a 30-day retention period. In the backend service, all data queries are limited to maximum 100 rows or a value chosen by the user. Queried data is sorted by time and returned as a list.  
-
+**Query:**  
+GET {url}/api/data/?limit=20  
+Limit param is optional.  
+  
+**Response:**  
+{ time: string, temperature: float, humidity: float }[]  
+  
+- **Time-series considerations:** The table uses a 30-day retention period. In the backend, all data queries are limited to 100 rows or a user-specified value and sorted by most recent entries.  
+  
 
 ### MQTT Topics and Payload Documentation
 #### Sensor Data (published by Wokwi)
