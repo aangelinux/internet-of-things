@@ -8,8 +8,8 @@ import { fetchData } from "../services/api"
 import { isValid } from "../utils/dataParser"
 
 function useChart(newData: ClimateData) {
-  const [maxPoints, setMaxPoints] = useState<number>(20)
   const [data, setData] = useState<ClimateData[]>([])
+  const maxDatapoints = 20
 
   const emptyChartData = {
     labels: [],
@@ -22,7 +22,7 @@ function useChart(newData: ClimateData) {
   useEffect(() => {
     async function fetchAPIData() {
       try {
-        const response = await fetchData()
+        const response = await fetchData(maxDatapoints)
         setData(response.filter((entry) => isValid(entry)))
       } catch (error) {
         console.error("Error fetching sensor data: ", error)
@@ -33,20 +33,17 @@ function useChart(newData: ClimateData) {
 
   const chartData: ChartData = useMemo(() => {
     try {
-      // Limit number of datapoints to prevent crowding
-      const datapoints = data.slice(-maxPoints)
-
       return { 
-        labels: datapoints.map((e) => e.time),
+        labels: data.map((e) => e.time),
         datasets: [
           {
             label: "Temperature",
-            data: datapoints.map((e) => e.temperature),
+            data: data.map((e) => e.temperature),
             borderColor: "teal"
           },
           {
             label: "Humidity",
-            data: datapoints.map((e) => e.humidity),
+            data: data.map((e) => e.humidity),
             borderColor: "purple"
           }
         ]
@@ -56,7 +53,7 @@ function useChart(newData: ClimateData) {
     }
 
     return emptyChartData
-  }, [data, maxPoints])
+  }, [data])
 
   useEffect(() => {
     if (!isValid(newData)) {

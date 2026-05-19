@@ -15,9 +15,9 @@ def write_data(db, data):
 
     db.write(point)
 
-def query_data(db):
+def query_data(db, limit = 100):
     """Queries and sorts data from an InfluxDB database."""
-    query = db.query("SELECT * FROM climate ORDER BY TIME")
+    query = db.query(f"SELECT * FROM climate ORDER BY time LIMIT {limit}")
 
     data = query.to_pylist()
     data.sort(key=lambda row: row["time"])
