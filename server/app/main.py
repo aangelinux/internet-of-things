@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.router import router
 from services.ConnectionManager import ConnectionManager
-from services.MqttBroker import MQTTBroker
+from services.MqttClient import MQTTClient
 from services.DBClient import DBClient
 
 load_dotenv()
@@ -20,18 +20,18 @@ origins = ["*"]
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db_client = DBClient()
-    mqtt_broker = MQTTBroker()
+    mqtt_client = MQTTClient()
     DBClient.connect(db_client)
-    MQTTBroker.connect(mqtt_broker)
+    MQTTClient.connect(mqtt_client)
 
     app.state.db_client = db_client
-    app.state.mqtt_broker = mqtt_broker
+    app.state.mqtt_client = mqtt_client
 
-    asyncio.create_task(mqtt_worker(mqtt_broker, db_client))
+    asyncio.create_task(mqtt_worker(mqtt_client, db_client))
 
     yield
 
-    app.state.mqtt_broker.disconnect()
+    app.state.mqtt_client.disconnect()
     app.state.db_client.disconnect()
     print("Server disconnected")
 
@@ -49,10 +49,12 @@ manager = ConnectionManager()
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await manager.connect(websocket)
+    print("WebSocket connected: ", client_id)
+
     try:
         while True:
             command = await websocket.receive_json()
-            MQTTBroker.publish(command)
+            MQTTClient.publish(command)
 
     except WebSocketDisconnect as e:
         manager.disconnect()

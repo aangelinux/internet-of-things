@@ -1,5 +1,5 @@
-# Filename: Mqtt.py
-# Description: Singleton MQTT connection with pub/sub architecture.
+# Filename: MqttClient.py
+# Description: Singleton connection to a HiveMQ broker.
 
 import os
 import asyncio
@@ -7,7 +7,7 @@ import paho.mqtt.client as paho
 from paho import mqtt
 from utils.dataValidator import parse_json, validate
 
-class MQTTBroker:
+class MQTTClient:
     instance = None
 
     def __new__(cls):

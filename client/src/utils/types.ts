@@ -1,7 +1,6 @@
-export interface BrokerInterface {
-  subscribeToSensor: (listener: () => void) => void
-  subscribeToLED: (listener: () => void) => void
-  publish: (command: string) => void
+export interface WSConnectionInterface {
+  connect: () => void
+  broadcast: (message: string) => void
   disconnect: () => void
 }
 

@@ -1,4 +1,4 @@
-# Filename: Database.py
+# Filename: DBClient.py
 # Description: Connection to an InfluxDB database.
 
 import os

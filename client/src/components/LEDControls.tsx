@@ -3,17 +3,17 @@
  */
 
 import { Button } from "@mui/material"
-import { BrokerInterface, LEDState } from "../utils/types"
+import { WSConnectionInterface, LEDState } from "../utils/types"
 
-function LEDControls({ broker, ledState }: 
-  { broker: BrokerInterface, ledState: LEDState }
+function LEDControls({ ws, ledState }: 
+  { ws: WSConnectionInterface, ledState: LEDState }
 ) {
   const handleClick = (state: string) => {
     if (state === "ON" || state === "OFF") {
       const command = JSON.stringify({
         msg: state
       })
-      broker.publish(command)
+      ws.broadcast(command)
     }
   }
 
