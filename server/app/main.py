@@ -3,32 +3,36 @@
 
 import asyncio
 
+from dotenv import load_dotenv
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.router import router
-from db.connect import create_db_client
 from services.ConnectionManager import ConnectionManager
 from services.MqttBroker import MQTTBroker
+from services.DBClient import DBClient
+
+load_dotenv()
 
 origins = ["*"]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    db_client = create_db_client()
-    mqtt_client = MQTTBroker()
-    MQTTBroker.connect(mqtt_client, db_client)
+    db_client = DBClient()
+    mqtt_broker = MQTTBroker()
+    DBClient.connect(db_client)
+    MQTTBroker.connect(mqtt_broker)
 
     app.state.db_client = db_client
-    app.state.mqtt_client = mqtt_client
+    app.state.mqtt_broker = mqtt_broker
 
-    asyncio.create_task(mqtt_worker(mqtt_client))
+    asyncio.create_task(mqtt_worker(mqtt_broker, db_client))
 
     yield
 
-    app.state.mqtt_client.disconnect()
-    app.state.db_client.close()
+    app.state.mqtt_broker.disconnect()
+    app.state.db_client.disconnect()
     print("Server disconnected")
 
 
@@ -54,8 +58,11 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
         manager.disconnect()
         print("WebSocket disconnected: ", e)
 
-async def mqtt_worker(client):
+async def mqtt_worker(mqtt, db):
     while True:
-        event = await client.queue.get()
+        event = await mqtt.queue.get()
+
+        if event.get("type") == "sensor":
+            db.write_data(event.get("data"))
 
         await manager.broadcast(event)

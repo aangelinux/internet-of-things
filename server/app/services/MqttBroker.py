@@ -5,8 +5,7 @@ import os
 import asyncio
 import paho.mqtt.client as paho
 from paho import mqtt
-from db.repository import write_data
-from db.dataValidator import parse_json, validate
+from utils.dataValidator import parse_json, validate
 
 class MQTTBroker:
     instance = None
@@ -25,7 +24,7 @@ class MQTTBroker:
             self.led_command_topic = "lnu/iot/al227bn/command/led"
             self.sensor_topic = "lnu/iot/al227bn/sensor"
 
-    def connect(self, db_client):
+    def connect(self):
         """Connects to an MQTT broker."""
         self.client = paho.Client(
             client_id="", 
@@ -42,10 +41,6 @@ class MQTTBroker:
         self.client.connect(os.getenv("HIVEMQ_URL"), 8883)
         self.client.loop_start()
 
-        self.client.user_data_set({
-            "db_client": db_client
-        })
-
     def on_connect(self, client, userdata, flags, rc, properties=None):
         if (rc != 0):
             print("Disconnected, rc = ", rc)
@@ -60,7 +55,6 @@ class MQTTBroker:
         if msg.topic == self.sensor_topic:
             climate_data = self.parse_sensor(msg.payload)
             if climate_data is not None:
-                write_data(userdata["db_client"], climate_data)
                 self.queue.put_nowait({
                     "type": "sensor",
                     "data": climate_data
