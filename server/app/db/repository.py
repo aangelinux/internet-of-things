@@ -2,18 +2,9 @@
 # Description: Provides functions for querying and writing data to the DB.
 
 from influxdb_client_3 import Point
-from .dataValidator import parse_json, validate
 
-def write_data(db, data):
+def write_data(db, climate_data):
     """Receives data from an MQTT client and writes it to a database."""
-    json_data = parse_json(data)
-    if json_data is None:
-        return
-
-    climate_data = validate(json_data)
-    if climate_data is None:
-        return
-
     point = Point("climate") \
         .field("temperature", climate_data.temperature) \
         .field("humidity", climate_data.humidity) \
