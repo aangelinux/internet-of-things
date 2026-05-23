@@ -1,6 +1,7 @@
 # Filename: MqttClient.py
 # Description: Singleton connection to a HiveMQ broker.
 
+import json
 import os
 import asyncio
 import paho.mqtt.client as paho
@@ -91,7 +92,8 @@ class MQTTClient:
         return led_state
 
     def publish(self, command):
-        self.client.publish(self.led_command_topic, command)
+        message = json.dumps({ "msg": command.get("msg") })
+        self.client.publish(self.led_command_topic, message)
 
     def disconnect(self):
         self.client.loop_stop()

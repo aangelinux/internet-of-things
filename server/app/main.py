@@ -52,7 +52,7 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             command = await websocket.receive_json()
-            app.state.mqtt_client.publish(str(command))
+            app.state.mqtt_client.publish(command)
 
     except WebSocketDisconnect as e:
         manager.disconnect(websocket)
