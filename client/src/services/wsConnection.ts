@@ -24,7 +24,7 @@ class WSConnection implements WSConnectionInterface {
   }
 
   connect() {
-    this.socket = new WebSocket("/ws")
+    this.socket = new WebSocket("ws://127.0.0.1:8000/ws")
 
     this.callbacks()
   }

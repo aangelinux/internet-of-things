@@ -21,8 +21,8 @@ origins = ["*"]
 async def lifespan(app: FastAPI):
     db_client = DBClient()
     mqtt_client = MQTTClient()
-    DBClient.connect(db_client)
-    MQTTClient.connect(mqtt_client)
+    db_client.connect()
+    mqtt_client.connect()
 
     app.state.db_client = db_client
     app.state.mqtt_client = mqtt_client
@@ -47,17 +47,15 @@ app.add_middleware(
 manager = ConnectionManager()
 
 @app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket, client_id: int):
+async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
-    print("WebSocket connected: ", client_id)
-
     try:
         while True:
             command = await websocket.receive_json()
-            MQTTClient.publish(command)
+            app.state.mqtt_client.publish(str(command))
 
     except WebSocketDisconnect as e:
-        manager.disconnect()
+        manager.disconnect(websocket)
         print("WebSocket disconnected: ", e)
 
 async def mqtt_worker(mqtt, db):
