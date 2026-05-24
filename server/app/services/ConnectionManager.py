@@ -1,6 +1,7 @@
 # Filename: ConnectionManager.py
 # Description: Handles a WebSocket connection.
 
+import json
 from fastapi import WebSocket
 
 class ConnectionManager:
@@ -13,8 +14,13 @@ class ConnectionManager:
         print("WebSocket connected")
 
     async def broadcast(self, message: str):
+        parsed = json.dumps({ 
+            "type": message.get("type"), 
+            "data": str(message.get("data"))
+        })
+
         for connection in self.active_connections:
-            await connection.send_json(message)
+            await connection.send_json(parsed)
 
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)

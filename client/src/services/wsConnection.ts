@@ -29,6 +29,8 @@ class WSConnection implements WSConnectionInterface {
     this.callbacks()
   }
 
+  
+
   subscribeToSensor(listener: (data: ClimateData) => void) {
     this.sensorListeners.push(listener)
   }
