@@ -1,8 +1,14 @@
 /**
- * Connection to a WebSocket.
+ * Connection to a WebSocket serving realtime sensor data and LED state.
  */
 
-import { ClimateData, LEDState, WSConnectionInterface } from "../utils/types"
+import { 
+  ClimateData, 
+  LEDMessage, 
+  LEDState, 
+  SensorMessage, 
+  WSConnectionInterface 
+} from "../utils/types"
 
 class WSConnection implements WSConnectionInterface {
   private socket: WebSocket | null = null
@@ -20,6 +26,7 @@ class WSConnection implements WSConnectionInterface {
     }
     this.socket.onmessage = (event) => {
       console.log("Incoming message: ", event)
+      this.handleIncoming(event.data)
     }
   }
 
@@ -29,7 +36,23 @@ class WSConnection implements WSConnectionInterface {
     this.callbacks()
   }
 
-  
+  handleIncoming(message: string) {
+    try {
+      const parsed: LEDMessage | SensorMessage = JSON.parse(message)
+
+      if (parsed.type === "sensor") {
+        this.notifySensor(parsed.data)
+      }
+      if (parsed.type === "ledState") {
+        const data: LEDState = {
+          "ledState": parsed.data
+        }
+        this.notifyLED(data)
+      }
+    } catch (error) {
+      console.log("Error parsing message: ", error)
+    }
+  }
 
   subscribeToSensor(listener: (data: ClimateData) => void) {
     this.sensorListeners.push(listener)

@@ -3,17 +3,16 @@
 
 import json
 from pydantic import BaseModel, ValidationError
-from datetime import datetime
 
 class ClimateData(BaseModel):
-    time: datetime
+    time: str
     temperature: float
     humidity: float
 
 
 def parse_json(data) -> dict | None:
     try:
-        return json.loads(data)
+        return json.loads(data.decode())
     except json.JSONDecodeError as e:
         print("JSON parsing failed: ", e)
 

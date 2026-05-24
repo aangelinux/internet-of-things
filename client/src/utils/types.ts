@@ -9,6 +9,16 @@ export interface ChartData {
   datasets: { label: string, data: number[], borderColor: string }[]
 }
 
+export interface SensorMessage {
+  type: "sensor"
+  data: ClimateData
+}
+
+export interface LEDMessage {
+  type: "ledState"
+  data: string
+}
+
 export interface ClimateData {
   time: string
   temperature: number
@@ -16,5 +26,5 @@ export interface ClimateData {
 }
 
 export interface LEDState {
-  ledState: "ON" | "OFF"
+  ledState: string
 }

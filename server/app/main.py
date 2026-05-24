@@ -20,18 +20,19 @@ origins = ["*"]
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db_client = DBClient()
-    mqtt_client = MQTTClient()
+    mqtt_client = MQTTClient(
+        on_sensor=handle_sensor,
+        on_led=handle_led
+    )
+
+    asyncio.create_task(mqtt_client.main())
     db_client.connect()
-    mqtt_client.connect()
 
     app.state.db_client = db_client
     app.state.mqtt_client = mqtt_client
 
-    asyncio.create_task(mqtt_worker(mqtt_client, db_client))
-
     yield
 
-    app.state.mqtt_client.disconnect()
     app.state.db_client.disconnect()
     print("Server disconnected")
 
@@ -51,18 +52,26 @@ async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
-            command = await websocket.receive_json()
-            app.state.mqtt_client.publish(command)
+            command = await websocket.receive_text()
+            print("Received message: ", command)
+
+            await app.state.mqtt_client.publish(command)
 
     except WebSocketDisconnect as e:
         manager.disconnect(websocket)
         print("WebSocket disconnected: ", e)
 
-async def mqtt_worker(mqtt, db):
-    while True:
-        event = await mqtt.queue.get()
 
-        if event.get("type") == "sensor":
-            db.write_data(event.get("data"))
+async def handle_sensor(data):
+    app.state.db_client.write_data(data)
 
-        await manager.broadcast(event)
+    await manager.broadcast({
+        "type": "sensor",
+        "data": data
+    })
+
+async def handle_led(state):
+    await manager.broadcast({
+        "type": "ledState",
+        "data": state
+    })
