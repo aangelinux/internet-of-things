@@ -11,7 +11,7 @@ class MQTTClient:
     def __init__(self, on_sensor, on_led):
         self.client = aiomqtt.Client(
             hostname=os.getenv("HIVEMQ_URL"),
-            port=8883,
+            port=os.getenv("HIVEMQ_PORT"),
             username="aangelinux",
             password=os.getenv("PASSWORD"),
             tls_context=ssl.create_default_context(),
@@ -30,7 +30,6 @@ class MQTTClient:
         reconnect_interval = 5
         try:
             await self.client.__aenter__()
-
             await self.client.subscribe(self.sensor_topic)
             await self.client.subscribe(self.led_state_topic)
 
@@ -43,7 +42,7 @@ class MQTTClient:
     async def listen(self):
         async with self.client.messages() as messages:
             async for message in messages:
-                print("Received message: ", message.payload)
+                print("Received MQTT message: ", message.payload)
                 await self.handle_messages(message)
 
     async def handle_messages(self, message):

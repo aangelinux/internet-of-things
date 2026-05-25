@@ -11,10 +11,11 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
+
         print("WebSocket connected")
 
     async def broadcast(self, message: dict):
-        # If data is of type ClimateData, it must be serialized first
+        # Sensor data is of type ClimateData so must be converted to a dict
         if message["type"] == "sensor":
             data = message["data"].model_dump()
         else:

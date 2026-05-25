@@ -6,6 +6,7 @@
     "strict": true,
     "noEmit": true,
     "allowJs": true,
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "types": ["vite/client"]
   }
 }

@@ -15,17 +15,18 @@ class DBClient:
         self.options = write_client_options(write_options=SYNCHRONOUS)
 
     def connect(self):
-        print("Connected to DB")
-
         self.client = InfluxDBClient3(
             host = os.getenv("HOST"),
             database = os.getenv("DATABASE"),
             token = os.getenv("ADMIN_TOKEN"),
+            org = os.getenv("ORG"),
             write_client_options = self.options
         )
 
+        print("Connected to DB")
+
     def write_data(self, climate_data):
-        """Receives data from an MQTT client and writes it to a database."""
+        """Receives data and writes it to a database."""
         point = Point("climate") \
             .field("temperature", climate_data.temperature) \
             .field("humidity", climate_data.humidity) \
@@ -34,7 +35,7 @@ class DBClient:
         self.client.write(point)
 
     def query_data(self, limit = 100):
-        """Queries and sorts data from an InfluxDB database."""
+        """Queries and sorts data from a database."""
         query = self.client.query(
             f"SELECT * FROM climate ORDER BY time DESC LIMIT {limit}"
         )

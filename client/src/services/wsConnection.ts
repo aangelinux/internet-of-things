@@ -18,7 +18,7 @@ class WSConnection implements WSConnectionInterface {
   private ledListeners: ((state: LEDState) => void)[] = []
 
   private constructor() {
-    this.socket = new WebSocket("ws://127.0.0.1:8000/ws") // Use ENV instead
+    this.socket = new WebSocket(import.meta.env.VITE_WS_URL)
 
     this.callbacks()
   }
@@ -53,9 +53,7 @@ class WSConnection implements WSConnectionInterface {
         this.notifySensor(parsed.data)
       }
       if (parsed.type === "ledState") {
-        const state: LEDState = {
-          "ledState": parsed.data
-        }
+        const state: LEDState = { "ledState": parsed.data }
         this.notifyLED(state)
       }
     } catch (error) {
