@@ -5,7 +5,7 @@
   "type": "module",
   "main": "src/index.tsx",
   "scripts": {
-    "start": "vite",
+    "start": "vite preview --host 0.0.0.0 --port $PORT",
     "client": "start http://localhost:3002 && vite",
     "server": "..\\.venv\\Scripts\\python.exe -X utf8 -m fastapi dev ../server/app/main.py",
     "dev": "concurrently \"npm run server\" \"sleep 5 && npm run client\"",
