@@ -13,7 +13,7 @@ class MQTTClient:
             hostname=os.getenv("HIVEMQ_URL"),
             port=os.getenv("HIVEMQ_PORT"),
             username="aangelinux",
-            password=os.getenv("PASSWORD"),
+            password=os.getenv("HIVEMQ_PASSWORD"),
             tls_context=ssl.create_default_context(),
             client_id="backend"
         )

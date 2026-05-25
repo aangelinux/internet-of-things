@@ -16,7 +16,7 @@ class DBClient:
 
     def connect(self):
         self.client = InfluxDBClient3(
-            host = os.getenv("HOST"),
+            host = os.getenv("DB_HOST"),
             database = os.getenv("DATABASE"),
             token = os.getenv("ADMIN_TOKEN"),
             org = os.getenv("ORG"),
