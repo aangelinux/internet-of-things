@@ -1,5 +1,6 @@
 export interface WSConnectionInterface {
-  connect: () => void
+  subscribeToSensor: (listener: () => void) => void
+  subscribeToLED: (listener: () => void) => void
   broadcast: (message: string) => void
   disconnect: () => void
 }

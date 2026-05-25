@@ -1,5 +1,5 @@
 /**
- * Connection to a WebSocket serving realtime sensor data and LED state.
+ * Singleton connection to a WebSocket serving real-time sensor data and LED state.
  */
 
 import { 
@@ -11,9 +11,21 @@ import {
 } from "../utils/types"
 
 class WSConnection implements WSConnectionInterface {
+  private static _instance: WSConnection | null = null
+
   private socket: WebSocket | null = null
   private sensorListeners: ((data: ClimateData) => void)[] = []
   private ledListeners: ((state: LEDState) => void)[] = []
+
+  private constructor() {
+    this.socket = new WebSocket("ws://127.0.0.1:8000/ws") // Use ENV instead
+
+    this.callbacks()
+  }
+
+  public static get Instance() {
+    return this._instance || (this._instance = new this())
+  }
 
   private callbacks() {
     if (!this.socket) return
@@ -25,18 +37,15 @@ class WSConnection implements WSConnectionInterface {
       console.log("WebSocket disconnected: ", event)
     }
     this.socket.onmessage = (event) => {
-      console.log("Incoming message: ", event)
+      console.log("Incoming message: ", event.data)
       this.handleIncoming(event.data)
+    }
+    this.socket.onerror = (event) => {
+      console.log("WebSocket error: ", event)
     }
   }
 
-  connect() {
-    this.socket = new WebSocket("ws://127.0.0.1:8000/ws")
-
-    this.callbacks()
-  }
-
-  handleIncoming(message: string) {
+  private handleIncoming(message: string) {
     try {
       const parsed: LEDMessage | SensorMessage = JSON.parse(message)
 
@@ -44,14 +53,22 @@ class WSConnection implements WSConnectionInterface {
         this.notifySensor(parsed.data)
       }
       if (parsed.type === "ledState") {
-        const data: LEDState = {
+        const state: LEDState = {
           "ledState": parsed.data
         }
-        this.notifyLED(data)
+        this.notifyLED(state)
       }
     } catch (error) {
-      console.log("Error parsing message: ", error)
+      console.log("Error parsing WS message: ", error)
     }
+  }
+
+  private notifySensor(data: ClimateData) {
+    this.sensorListeners.forEach((listener) => listener(data))
+  }
+
+  private notifyLED(state: LEDState) {
+    this.ledListeners.forEach((listener) => listener(state))
   }
 
   subscribeToSensor(listener: (data: ClimateData) => void) {
@@ -62,17 +79,13 @@ class WSConnection implements WSConnectionInterface {
     this.ledListeners.push(listener)
   }
 
-  notifySensor(data: ClimateData) {
-    this.sensorListeners.forEach((listener) => listener(data))
-  }
-
-  notifyLED(state: LEDState) {
-    this.ledListeners.forEach((listener) => listener(state))
-  }
-
   broadcast(message: string) {
-    console.log("Broadcasting ... ", message)
-    this.socket?.send(message)
+    if (this.socket?.readyState === WebSocket.OPEN) {
+      console.log("Broadcasting ... ", message)
+      this.socket.send(message)
+    } else {
+      console.log("Socket not open: ", this.socket?.readyState)
+    }
   }
 
   disconnect() {

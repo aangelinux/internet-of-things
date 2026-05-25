@@ -14,9 +14,8 @@ class MQTTClient:
             port=8883,
             username="aangelinux",
             password=os.getenv("PASSWORD"),
-            client_id=None,
             tls_context=ssl.create_default_context(),
-            keepalive=60,
+            client_id="backend"
         )
 
         self.on_sensor = on_sensor
@@ -29,19 +28,20 @@ class MQTTClient:
 
     async def main(self):
         reconnect_interval = 5
-        while True:
-            try:
-                async with self.client as client:
-                    await self.receive_messages(client)
+        try:
+            await self.client.__aenter__()
 
-            except aiomqtt.MqttError as error:
-                print(f'Error: {error}. Reconnecting in {reconnect_interval} sec.')
-                await asyncio.sleep(reconnect_interval)
+            await self.client.subscribe(self.sensor_topic)
+            await self.client.subscribe(self.led_state_topic)
 
-    async def receive_messages(self, client):
-        async with client.messages() as messages:
-            await client.subscribe(self.sensor_topic)
-            await client.subscribe(self.led_state_topic)
+            asyncio.create_task(self.listen())
+
+        except aiomqtt.MqttError as error:
+            print(f'Error: {error}. Reconnecting in {reconnect_interval} sec.')
+            await asyncio.sleep(reconnect_interval)
+
+    async def listen(self):
+        async with self.client.messages() as messages:
             async for message in messages:
                 print("Received message: ", message.payload)
                 await self.handle_messages(message)

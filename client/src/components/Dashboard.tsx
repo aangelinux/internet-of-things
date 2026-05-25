@@ -13,11 +13,9 @@ function Dashboard() {
   const [ledState, setLedState] = useState<LEDState>({ ledState: "OFF" })
   const [realtimeData, setRealtimeData] = useState<ClimateData | null>(null)
 
-  const ws = new WSConnection()
+  const ws = WSConnection.Instance
 
   useEffect(() => {
-    ws.connect()
-
     ws.subscribeToLED((state) => {
       setLedState(state)
     })
