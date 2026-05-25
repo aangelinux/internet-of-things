@@ -8,10 +8,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.router import router
-from services.ConnectionManager import ConnectionManager
-from services.MqttClient import MQTTClient
-from services.DBClient import DBClient
+from app.api.router import router
+from app.services.ConnectionManager import ConnectionManager
+from app.services.MqttClient import MQTTClient
+from app.services.DBClient import DBClient
 
 load_dotenv()
 

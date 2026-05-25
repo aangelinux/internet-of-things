@@ -5,7 +5,7 @@ import os
 import ssl
 import asyncio
 import asyncio_mqtt as aiomqtt
-from utils.dataValidator import parse_json, validate
+from app.utils.dataValidator import parse_json, validate
 
 class MQTTClient:
     def __init__(self, on_sensor, on_led):
