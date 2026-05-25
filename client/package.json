@@ -5,6 +5,7 @@
   "type": "module",
   "main": "src/index.tsx",
   "scripts": {
+    "start": "vite",
     "client": "start http://localhost:3002 && vite",
     "server": "..\\.venv\\Scripts\\python.exe -X utf8 -m fastapi dev ../server/app/main.py",
     "dev": "concurrently \"npm run server\" \"sleep 5 && npm run client\"",
@@ -17,7 +18,7 @@
     "@vitejs/plugin-react": "^6.0.1",
     "concurrently": "^9.2.1",
     "typescript": "^6.0.3",
-    "vite": "^8.0.12"
+    "vite": "^8.0.14"
   },
   "dependencies": {
     "@emotion/styled": "^11.14.1",
@@ -26,6 +27,7 @@
     "react": "^19.2.6",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.6",
-    "react-router-dom": "^7.15.0"
+    "react-router-dom": "^7.15.0",
+    "vite": "^8.0.14"
   }
 }
