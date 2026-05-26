@@ -30,11 +30,11 @@ class MQTTClient:
         reconnect_interval = 5
         while True:
             try:
-                await self.client.__aenter__()
-                await self.client.subscribe(self.sensor_topic)
-                await self.client.subscribe(self.led_state_topic)
+                async with self.client:
+                    await self.client.subscribe(self.sensor_topic)
+                    await self.client.subscribe(self.led_state_topic)
 
-                asyncio.create_task(self.listen())
+                    asyncio.create_task(self.listen())
 
             except aiomqtt.MqttError as error:
                 print(f'Error: {error}. Reconnecting in {reconnect_interval} sec.')
