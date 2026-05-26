@@ -9,15 +9,6 @@ from app.utils.dataValidator import parse_json, validate
 
 class MQTTClient:
     def __init__(self, on_sensor, on_led):
-        self.client = aiomqtt.Client(
-            hostname=os.getenv("HIVEMQ_URL"),
-            port=int(os.getenv("HIVEMQ_PORT")),
-            username="aangelinux",
-            password=os.getenv("HIVEMQ_PASSWORD"),
-            tls_context=ssl.create_default_context(),
-            client_id="backend"
-        )
-
         self.on_sensor = on_sensor
         self.on_led = on_led
 
@@ -28,13 +19,23 @@ class MQTTClient:
 
     async def main(self):
         reconnect_interval = 5
+
         while True:
             try:
-                async with self.client:
+                client = aiomqtt.Client(
+                        hostname=os.getenv("HIVEMQ_URL"),
+                        port=int(os.getenv("HIVEMQ_PORT")),
+                        username="aangelinux",
+                        password=os.getenv("HIVEMQ_PASSWORD"),
+                        tls_context=ssl.create_default_context(),
+                        client_id="backend"
+                    )
+                async with client:
+                    self.client = client
+
                     await self.client.subscribe(self.sensor_topic)
                     await self.client.subscribe(self.led_state_topic)
-
-                    asyncio.create_task(self.listen())
+                    await self.listen()
 
             except aiomqtt.MqttError as error:
                 print(f'Error: {error}. Reconnecting in {reconnect_interval} sec.')
