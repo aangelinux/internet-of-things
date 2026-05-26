@@ -5,7 +5,7 @@
 import { ClimateData } from "../utils/types"
 
 export async function fetchSensorData(limit: number): Promise<ClimateData[]> {
-  const url = `${import.meta.env.VITE_BACKEND_URL}/?limit=${limit}`
+  const url = `${import.meta.env.VITE_BACKEND_URL}/api/data/historical?limit=${limit}`
   const res = await fetch(url)
 
   if (!res.ok) {
