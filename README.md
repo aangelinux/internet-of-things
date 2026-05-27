@@ -1,25 +1,27 @@
 # Assignment: Internet of Things (IoT)
   
-## Submission Report
-  
-### Project Links
-- **Live Dashboard URL:** [Link to deployed frontend, e.g. Vercel/Netlify/Cumulus]
-- **Wokwi Simulation URL:** [Public Wokwi project link]
-- **Backend/Database URL:** [Link to deployed backend stack, if applicable]
-- **Frontend & Backend Repository URL:** [Link to your source code]
-- **Wokwi Simulation Repository URL:** [Link to Wokwi simulation source code]
+## Project Links
+- **Live Dashboard URL:** [Dashboard](https://iot-sensor.up.railway.app/)
+- **Wokwi Simulation URL:** [Wokwi](https://wokwi.com/projects/465088340700419073)
+- **Frontend & Backend Repository URL:** [Repository](https://gitlab.lnu.se/1dv027/student/al227bn/exercises/assignment-iot)
+- **Grafana Dashboard URL:** [Grafana](https://aangelinux.grafana.net/public-dashboards/68b52a9554e142bcbbe8b1b3b029e55b)
 
 
-### Project Overview
-This project features a full IoT pipeline from hardware, to backend, to frontend. The hardware collects temperature & humidity data from a sensor and publishes it to an MQTT Broker. A backend service is set up to read the sensor data from the broker, store it in a database, and expose it via a REST API to be used by a web dashboard.  
+## Project Overview
+This project features a full IoT pipeline that collects and visualizes temperature & humidity data. The hardware consists of an ESP32 microcontroller with a DHT22 sensor and LED component, simulated in Wokwi. It publishes sensor data and LED state to an MQTT broker hosted by HiveMQ Cloud, and subscribes to commands by turning the LED on and off. A backend service reads the data from the broker and writes it to a database hosted by InfluxDB Cloud, before sending it to the frontend service over a WebSocket connection, so it can be visualized on a dashboard.  
   
-The Wokwi simulation uses an ESP32 microcontroller with a DHT22 sensor and a simple LED component. The dashboard fetches historical sensor data from the backend and displays it on a line chart. It uses a WebSocket connection to read real-time sensor data & LED state from the MQTT Broker and update the chart dynamically. In addition, it provides a set of controls to modify the LED's current state.  
+In addition, the project uses Telegraf to inject sensor data from the broker directly into the database. The data is then visualized on a Grafana dashboard consisting of real-time, historical, and aggregated data-panels.  
   
-
-### Architecture and Data Flow
-- **Sensor Data**: Wokwi Device -> MQTT Broker -> Backend/Database -> Dashboard
-- **LED State**: Wokwi Device -> MQTT Broker -> Dashboard
-- **LED Command**: Dashboard -> MQTT Broker -> Wokwi Device
+### Demo
+It should be possible to turn on the Wokwi simulation and use the Live Dashboard without doing anything else, but otherwise:  
+  
+![Demo](demo.mp4)  
+  
+  
+## Architecture and Data Flow
+- **Sensor Data**: Wokwi Device -> MQTT Broker -> Backend/Database -> (HTTPS, WS) -> Dashboard
+- **LED State**: Wokwi Device -> MQTT Broker -> Backend -> (WS) -> Dashboard
+- **LED Command**: Dashboard -> (WS) -> Backend -> MQTT Broker -> Wokwi Device
 
 ```mermaid
 flowchart TD
@@ -29,30 +31,22 @@ flowchart TD
     D[(Database)]
     E[Web Dashboard]
 
-    A --->|MQTT publish: sensor data, led state| B
-    B --->|MQTT subscribe: led command| A
-    B --->|MQTT subscribe: sensor data| C
-    C --> D
-    C --->|HTTPS API: sensor data| E
-    B <--->|WebSocket Connection| E
-    B --->|MQTT subscribe: led state, sensor data| E
-    E --->|MQTT publish: led command| B
+    A --->|MQTT publish: sensor data, LED state| B
+    B --->|MQTT subscribe: LED command| A
+    B --->|MQTT publish: sensor data, led state| C
+    C --->|MQTT subscribe: LED command| B
+    C <---->|HTTPS: sensor data| D
+    C ---->|HTTPS: sensor data| E
+    C ---->|WS: sensor data, LED state| E
+    E ---->|WS: LED command| C
 ```
 
 
-### Database Strategy
+## Database Strategy
 - **Database chosen:** InfluxDB  
 - **Data access layer:** Path A (Custom API)  
   
 - **Data model:** 
-
-  - **Table: climate**  
-    
-    | field       | value   |
-    | ----------- | ------- |
-    | temperature | float64 |
-    | humidity    | float64 |
-    | time        | string  |  
   
   - **Query:**  
     GET {url}/api/data/?limit=20  
@@ -64,8 +58,8 @@ flowchart TD
 - **Time-series considerations:** The table uses a 30-day retention period. In the backend, all data queries are limited to 100 rows or a user-specified value and sorted by most recent entries.  
   
 
-### MQTT Topics and Payload Documentation
-#### Sensor Data (published by Wokwi)
+## MQTT Topics and Payload Documentation
+### Sensor Data (published by Wokwi)
 - **Topic:** `lnu/iot/al227bn/sensor`
 - **Example Payload (JSON):**
 
@@ -79,7 +73,7 @@ flowchart TD
 ---
   
   
-#### LED State (published by Wokwi)
+### LED State (published by Wokwi)
 - **Topic:** `lnu/iot/al227bn/led/state`
 - **Example Payload (JSON):**
 
@@ -91,7 +85,7 @@ flowchart TD
 ---
   
   
-#### Device Commands (published by dashboard, subscribed by Wokwi)
+### LED Commands (published by dashboard)
 - **Topic:** `lnu/iot/al227bn/command/led`
 - **Example Payload (JSON):**
 
@@ -104,13 +98,36 @@ flowchart TD
 
 
 ### Reflection
-**Frontend technologies used:**  
-- React for its simplicity in developing robust and user-friendly UIs
-- Vite for its versatility & bundling capabilities
-- Chart.js for its capabilites in creating dynamic and good-looking charts
+**Technologies used:**  
+- React: 
+- Chart.js: 
+- Vite: 
+- FastAPI: 
+- HiveMQ Cloud: 
+- InfluxDB Cloud: 
+- Telegraf: 
+- Grafana: 
   
-2. How does handling real-time MQTT data over WebSockets differ from a standard REST API workflow?
-3. What was the most challenging integration step (hardware, broker, backend, database, frontend), and how did you solve it?
+2. How does handling real-time MQTT data over WebSockets differ from a standard REST API workflow?  
+
+
+
+3. What was the most challenging integration step (hardware, broker, backend, database, frontend), and how did you solve it?  
+
+
+
+## VG-A TIG Stack
+### Security Considerations
+
+
+  
+### Demo
+![Grafana Demo](demo_grafana.mp4)  
+
+  
+### Reflection
+
+
 
 
 ### Grading Policy Mapping
