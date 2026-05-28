@@ -58,20 +58,17 @@ async def websocket_endpoint(websocket: WebSocket):
                 print("Received WS message:", command)
 
                 await app.state.mqtt_client.publish(command)
-
             except WebSocketDisconnect:
                 print("WebSocket disconnected")
                 break
-
             except Exception as e:
                 print("WS error:", e)
-
     finally:
         manager.disconnect(websocket)
 
 
 async def handle_sensor(data):
-    # Schedule async DB write to avoid blocking the event loop
+    # Schedule DB write to avoid blocking the event loop
     asyncio.create_task(asyncio.to_thread(app.state.db_client.write_data, data))
 
     await manager.broadcast({

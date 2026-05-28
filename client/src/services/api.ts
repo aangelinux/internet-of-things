@@ -13,5 +13,5 @@ export async function fetchSensorData(limit: number): Promise<ClimateData[]> {
   }
   const result = await res.json()
 
-  return result.message
+  return result
 }

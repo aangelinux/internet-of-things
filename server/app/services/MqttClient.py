@@ -28,7 +28,7 @@ class MQTTClient:
                         username="aangelinux",
                         password=os.getenv("HIVEMQ_PASSWORD"),
                         tls_context=ssl.create_default_context(),
-                        client_id="backend"
+                        client_id="backend_local"
                     )
                 async with client:
                     self.client = client
