@@ -19,17 +19,9 @@ class MQTTClient:
 
     async def main(self):
         reconnect_interval = 5
-
         while True:
             try:
-                client = aiomqtt.Client(
-                        hostname=os.getenv("HIVEMQ_URL"),
-                        port=int(os.getenv("HIVEMQ_PORT")),
-                        username="aangelinux",
-                        password=os.getenv("HIVEMQ_PASSWORD"),
-                        tls_context=ssl.create_default_context(),
-                        client_id="backend_local"
-                    )
+                client = self.create_client()
                 async with client:
                     self.client = client
 
@@ -40,6 +32,16 @@ class MQTTClient:
             except aiomqtt.MqttError as error:
                 print(f'Error: {error}. Reconnecting in {reconnect_interval} sec.')
                 await asyncio.sleep(reconnect_interval)
+
+    def create_client(self):
+        return aiomqtt.Client(
+            hostname=os.getenv("HIVEMQ_URL"),
+            port=int(os.getenv("HIVEMQ_PORT")),
+            username="aangelinux",
+            password=os.getenv("HIVEMQ_PASSWORD"),
+            tls_context=ssl.create_default_context(),
+            client_id=os.getenv("CLIENT_ID")
+        )
 
     async def listen(self):
         async with self.client.messages() as messages:
@@ -81,4 +83,7 @@ class MQTTClient:
         return led_state
 
     async def publish(self, command):
-        await self.client.publish(self.led_command_topic, command)
+        if self.client:
+            await self.client.publish(self.led_command_topic, command)
+        else:
+            print("No MQTT client connected")
