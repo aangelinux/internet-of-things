@@ -8,11 +8,20 @@
 
 ---
 ## Project Overview
-This project features a full IoT pipeline that collects and visualizes temperature & humidity data. The hardware consists of an ESP32 microcontroller with a DHT22 sensor and LED component, simulated in Wokwi. It publishes sensor data and LED state to an MQTT broker hosted by HiveMQ Cloud, and subscribes to commands by turning the LED on and off. A backend service reads the data from the broker and writes it to a database hosted by InfluxDB Cloud, before sending it to the frontend service over a WebSocket connection, so it can be visualized on a dashboard.  
+This project features a full IoT pipeline that collects and visualizes temperature & humidity data. The hardware consists of an ESP32 microcontroller with a DHT22 sensor and LED component, simulated in Wokwi. The ESP32 publishes sensor readings and current LED state to a HiveMQ Cloud MQTT broker. It also subscribes to LED commands, allowing the dashboard to remotely toggle the LED on and off. The backend reads the data from the broker and writes it to an InfluxDB Cloud bucket, before forwarding it to the frontend over WebSocket.  
   
-In addition, the project uses Telegraf to inject sensor data from the broker directly into the database. The data is then visualized on a Grafana dashboard consisting of real-time, historical, and aggregated data-panels.  
+The project also uses Telegraf to inject sensor data from the broker into a separate InfluxDB bucket. Grafana queries this bucket directly and visualizes the data on a dashboard consisting of real-time, historical, and aggregated data-panels.  
   
-#### Demo
+### Deployment
+| Component | Platform       |
+| --------- | -------------- |
+| Frontend  | Railway        |
+| Backend   | Railway        |
+| Broker    | HiveMQ Cloud   |
+| Database  | InfluxDB Cloud |
+| Hardware  | Wokwi          |
+
+### Demo
 It should be possible to turn on the Wokwi simulation and use the Dashboard without doing anything else, but if not:  
   
 ![Demo](demo.mp4)  
@@ -26,20 +35,19 @@ It should be possible to turn on the Wokwi simulation and use the Dashboard with
 
 ```mermaid
 flowchart TD
-    A[Wokwi Device] 
-    B[MQTT Broker]
-    C[Backend Service]
-    D[(Database)]
-    E[Web Dashboard]
+    A[ESP32 & DHT22] 
+    B[HiveMQ Broker]
+    C[FastAPI Server]
+    D[(InfluxDB)]
+    E[React Dashboard]
 
-    A --->|MQTT publish: sensor data, LED state| B
-    B --->|MQTT subscribe: LED command| A
-    B --->|MQTT publish: sensor data, led state| C
-    C --->|MQTT subscribe: LED command| B
-    C <---->|HTTPS: sensor data| D
-    C ---->|HTTPS: sensor data| E
-    C ---->|WS: sensor data, LED state| E
-    E ---->|WS: LED command| C
+    A --->|MQTT: Sensor data, LED state| B
+    B --->|MQTT: LED command| A
+    B --->|MQTT: Sensor data, LED state| C
+    C --->|MQTT: LED command| B
+    C <---->|Write/Query: Sensor data| D
+    C ---->|REST API: Sensor data| E
+    C <---->|WS: Sensor data, LED state, LED command| E
 ```
   
 ---
@@ -48,27 +56,28 @@ flowchart TD
 - **Data access layer:** Path A (Custom API)  
   
 - **Data model:** 
-  - **Source:**  
-    InfluxDB Cloud, bucket: iot_assignment, measurement: climate    
+  - **Sources:**  
+    Custom API: bucket: iot_assignment, measurement: climate  
+    TIG-Stack: bucket: iot_telegraf, measurement: mqtt_consumer  
+
+  - **Query (custom API):**  
+    GET https://iot-backend-api.up.railway.app/api/data/historical  
+        
+    Parameters: limit (optional)    
     
   - **Schema:**  
     time: string  
     temperature: float  
     humidity: float  
     
-  - **Query:**  
-    GET https://iot-backend-api.up.railway.app/api/data/historical  
-        
-    Parameters: limit (optional)    
-    
   - **Response:**  
-    { message: { time: string, temperature: float, humidity: float }[] }   
+    { time: string, temperature: float, humidity: float }[]   
     
-- **Time-series considerations:** The bucket uses a 30-day retention period. In the backend, data queries are by default limited to 100 rows value and sorted by time, from most recent to last.  
+- **Time-series considerations:** The bucket uses a 30-day retention period. In the backend, data queries are limited to 100 rows by default and sorted by time, from most recent to last.  
   
   
 ---
-## MQTT Topics and Payload Documentation
+## MQTT Topics and Payloads
 ### Sensor Data (published by Wokwi)
 - **Topic:** `lnu/iot/al227bn/sensor`
 - **Example Payload (JSON):**
@@ -106,30 +115,57 @@ flowchart TD
 ```
 
 ---
+## WebSocket Payloads
+### Sensor Data
+```json
+{
+  "type": "sensor",
+  "data": {
+    "time": "2026-05-28T16:09:00",
+    "temperature": 20.0,
+    "humidity": 50.0
+  }
+}
+```
+  
+### LED State
+```json
+{
+  "type": "ledState",
+  "data": {
+    "ledState": "ON"
+  }
+}
+```
+  
+### LED Commands
+```json
+{
+  "msg": "ON"
+}
+```
+  
+---
 ## Reflection
-**Technologies used:**  
-- React: Simple and flexible for creating user-friendly frontend applications.
-- Chart.js: Creates dynamic and good-looking charts.
-- FastAPI: Flexible and lightweight, suitable for a simple backend like this one.
-- HiveMQ Cloud: Reliable and secure; has support for SSL/TLS, and keeps the broker running 24/7.
-- InfluxDB Cloud: Serverless and easy to set up. 
+**Frontend technologies used:**  
+To build the frontend, I chose React as a framework because it's simple to use and versatile for building user-friendly applications. I also chose to use TypeScript because of the added type-safety compared to JavaScript. To display sensor data, I used Chart.js because it's flexible and makes it easy to create responsive and nice-looking charts.
    
 **Real-time Data vs Standard REST APIs:**  
-Handling real-time data over WebSocket differs from a standard API workflow in many ways; your code must ensure that the WebSocket and MQTT connections stay open and attempt to reconnect if something goes wrong. You must also handle concurrency issues as data is constantly being received or published at very short intervals, and since standard workflow is often synchronous you have to make sure that the program is not being blocked by a synchronous operation. You also need to ensure that the data format is correct and consistent on each end to avoid parsing issues.  
+Handling real-time data over WebSocket differs from a standard API workflow in many ways. In traditional REST APIs, the client only fetches data when it's needed, whereas real-time data is transmitted as soon as an event occurs. The program must ensure the connection stays open, attempt to reconnect if something fails, and handle messages asynchronously to avoid blocking the program. Network- and concurrency issues can make this more challenging than using standard API workflows. However, using real-time data made the application more dynamic and useful for viewers.  
   
 **Challenges:**  
-There were many challenging integration steps in this assignment. Using a broker was initially very challenging since it was new for me, and connecting both the Wokwi device and the backend to it was difficult but solved after some debugging and reading documentation of MQTT client libraries. Switching from a public broker to HiveMQ Cloud also proved challenging later as it involved handling credentials and setting up a secure connection with SSL/TLS.  
+One of the most challenging aspects of this assignment was setting up the broker and making it communicate with all necessary components. It was also challenging initially to understand the pipeline from Wokwi simulation -> Dashboard since it involves multiple components that must work together. What helped was drawing out the architecture to visualize where each part is located and what it should do. It was also helpful to document data formats to prevent mismatched data while it's being passed from one component to the next.  
   
 ---
 ## VG-A TIG Stack
-#### Demo
+### Demo
 ![Grafana Demo](demo_grafana.mp4)  
   
-#### Security Considerations
-Access to the MQTT broker requires username and password. All secrets such as InfluxDB token and broker credentials are stored as environment variables and **not** pushed to the remote repository. In addition, the Grafana Dashboard requires admin permission to edit; it is read-only for all other viewers.  
+### Security Considerations
+To make MQTT communication secure, access to the broker requires credentials and all communication is encrypted with TLS. Access to InfluxDB is restricted with API tokens. Grafana Dashboard requires admin permissions to edit and is read-only for viewers by default. Secrets, eg credentials and tokens, are injected through environment variables and **not** committed to version control.  
   
-Initially I had the frontend communicate directly with the MQTT broker over WebSocket, but after switching to a HiveMQ broker with credentials I moved this communication to the server instead. This way the server forwards realtime data to the client via WebSocket, to avoid exposing credentials in client-code.  
+I initially set up the frontend to communicate directly with the MQTT broker over WebSocket, but after switching to a protected HiveMQ broker I moved MQTT communication to the server instead, to avoid exposing credentials in client-code.   
   
-#### Technical Reflection
-Using the TIG-stack was much less time-consuming than building a backend and frontend from scratch. Although building a custom backend allowed more flexiblity, using the TIG-stack simplified the IoT pipeline noticeably and did not require writing any code.
+### Technical Reflection
+Using the TIG-stack made implementation a lot easier and faster at the cost of some flexibility, and the pipeline became much simpler without the need for a custom backend. Grafana also provided multiple options for visualizing data without requiring a custom frontend.
   
