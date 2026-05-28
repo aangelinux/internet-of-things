@@ -46,4 +46,5 @@ class DBClient:
         return data
 
     def disconnect(self):
-        self.client.close()
+        if self.client:
+            self.client.close()

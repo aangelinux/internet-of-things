@@ -15,8 +15,7 @@ class ConnectionManager:
         print("WebSocket connected")
 
     async def broadcast(self, message: dict):
-        if message["type"] == "sensor":  
-            # Data is an object so must be converted to a dict
+        if message["type"] == "sensor":
             data = message["data"].model_dump()
         else:
             data = message["data"]
@@ -24,9 +23,9 @@ class ConnectionManager:
         payload = { "type": message["type"], "data": data }
         coros = [connection.send_json(payload) 
                  for connection in self.active_connections]
+
         if coros:  # Send concurrently instead of one at a time
             results = await asyncio.gather(*coros, return_exceptions=True)
-
             # Remove dead connections
             for connection, result in zip(self.active_connections[:], results):
                 if isinstance(result, Exception):

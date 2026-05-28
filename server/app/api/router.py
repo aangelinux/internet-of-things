@@ -8,7 +8,7 @@ router = APIRouter()
 
 @router.get("/api", tags=["root"])
 async def read_root():
-    return { "Hello, World!" }
+    return { "message": "Hello, World!" }
 
 @router.get("/api/data/historical", tags=["data"])
 async def read_historical_data(limit: int | None = None, db=Depends(get_db)):
