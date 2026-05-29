@@ -36,7 +36,7 @@ function SensorChart({ realtimeData }: { realtimeData: ClimateData | null }) {
     fontFamily: "GoogleSans",
     color: "#274c77",
     marginTop: 40,
-    margin: 0
+    marginBottom: 0,
   }
 
   const options = {
