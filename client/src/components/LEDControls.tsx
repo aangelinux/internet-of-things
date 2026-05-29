@@ -21,16 +21,23 @@ function LEDControls({ ws, ledState }:
     return ledState.ledState === "ON" ? "green" : "red"
   }
 
+  const divStyle = {
+    backgroundColor: "#274c77", 
+    padding: 30, 
+    borderRadius: 10
+  }
+
   const headerStyle: Object = {
     display: "flex", 
     justifySelf: "center", 
     fontFamily: "GoogleSans", 
     flexDirection: "row",
     gap: 10,
+    color: "#e7ecef"
   }
 
   return (
-    <div>
+    <div style={divStyle}>
       <div style={headerStyle}>
         <h1>LED State:</h1>
         <h1 style={{ color: color() }}>{ledState.ledState}</h1>

@@ -34,13 +34,16 @@ function SensorChart({ realtimeData }: { realtimeData: ClimateData | null }) {
   const headerStyle = {
     justifySelf: "center",
     fontFamily: "GoogleSans",
+    color: "#274c77",
+    marginTop: 40,
+    margin: 0
   }
 
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     layout: {
-      padding: 25,
+      padding: 50,
     },
     scales: {
       y: {
@@ -51,7 +54,9 @@ function SensorChart({ realtimeData }: { realtimeData: ClimateData | null }) {
           autoSkip: true,
           maxTicksLimit: 10,
           callback: function(
-            tickValue: string | number, index: number, ticks: Tick[]
+            tickValue: string | number, 
+            index: number, 
+            ticks: Tick[]
           ) { 
             return formatTick(index, chartData)
           },
