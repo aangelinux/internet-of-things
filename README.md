@@ -24,7 +24,7 @@ The project also uses Telegraf to inject sensor data from the broker into a sepa
 ### Demo
 It should be possible to turn on the Wokwi simulation and use the Dashboard without doing anything else, but if not:  
   
-![Demo](demo.mp4)  
+![Demo](demo2.mp4)  
   
 
 ---  
