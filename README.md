@@ -3,8 +3,7 @@
 ## URL
 [IoT Dashboard](https://iot-sensor.up.railway.app/)
   
----
-## Introduction
+## Intro
 This project features a full IoT system that collects and visualizes temperature & humidity data. The hardware consists of an ESP32 microcontroller with a DHT22 sensor and LED component, simulated in Wokwi. The ESP32 publishes sensor readings and current LED state to a HiveMQ Cloud MQTT broker. It also subscribes to LED commands, allowing the dashboard to remotely toggle the LED on and off. The backend reads the data from the broker and writes it to an InfluxDB Cloud bucket, before forwarding it to the frontend over WebSocket.  
 
 ---
@@ -23,7 +22,7 @@ This project features a full IoT system that collects and visualizes temperature
 | Database  | InfluxDB Cloud |
 | Hardware  | Wokwi          |
 
----  
+  
 ## Architecture and Data Flow
 - **Sensor Data**: Wokwi Device -> MQTT Broker -> Backend/Database -> (HTTPS, WS) -> Dashboard
 - **LED State**: Wokwi Device -> MQTT Broker -> Backend -> (WS) -> Dashboard
@@ -45,3 +44,6 @@ flowchart TD
     C ---->|REST API: Sensor data| E
     C <---->|WS: Sensor data, LED state, LED command| E
 ```
+
+## License
+Licensed under the MIT license.
